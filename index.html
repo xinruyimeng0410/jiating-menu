@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23FF6B35'/%3E%3Cpath d='M14 34h36c0 9-8 15-18 15S14 43 14 34z' fill='%23fff'/%3E%3Cpath d='M22 26c0-4 4-4 4-8M32 26c0-4 4-4 4-8M42 26c0-4 3-4 3-7' stroke='%23fff' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>绍兴人家的今日菜单 · 点菜&厨房</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --primary:#FF6B35;
+  --primary-light:#FFF0E8;
+  --primary-dark:#E55A2B;
+  --success:#4CAF50;
+  --success-light:#E8F5E9;
+  --info:#2B6FD9;
+  --info-light:#EAF1FD;
+  --warn:#D9930D;
+  --warn-light:#FFF7E0;
+  --danger:#E05260;
+  --danger-light:#FDEBEC;
+  --text:#2D2D2D;
+  --text-light:#666;
+  --text-muted:#999;
+  --bg:#F8F8F8;
+  --card:#FFFFFF;
+  --border:#EEEEEE;
+  --shadow:0 2px 12px rgba(0,0,0,.08);
+  --radius:14px;
+}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.6;
+  max-width:480px;margin:0 auto;min-height:100vh;position:relative;
+  box-shadow:0 0 30px rgba(0,0,0,.06);
+}
+.hidden{display:none!important}
+button{font-family:inherit}
+a{color:var(--info)}
+
+/* ===== Sticky top ===== */
+.sticky-top{position:sticky;top:0;z-index:100}
+.header{
+  background:linear-gradient(135deg,var(--primary),#FF8F65);
+  color:#fff;padding:12px 14px 10px;
+  box-shadow:0 2px 16px rgba(255,107,53,.35);
+}
+.header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.h-title{font-size:18px;font-weight:700;line-height:1.35;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.h-title .who{
+  font-size:12px;font-weight:700;background:rgba(255,255,255,.24);
+  padding:2px 9px;border-radius:11px;max-width:150px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;
+}
+.header-sub{font-size:11.5px;opacity:.92;margin-top:2px}
+.h-actions{display:flex;gap:6px;flex-shrink:0}
+.icon-btn{
+  min-width:32px;height:32px;padding:0 8px;border-radius:16px;border:none;cursor:pointer;
+  background:rgba(255,255,255,.22);color:#fff;font-size:14px;line-height:1;
+  display:flex;align-items:center;justify-content:center;gap:4px;transition:all .2s;
+}
+.icon-btn:active{transform:scale(.92);background:rgba(255,255,255,.38)}
+.mode-switch{display:flex;background:rgba(255,255,255,.22);border-radius:20px;padding:3px;margin-top:9px}
+.mode-btn{
+  flex:1;border:none;background:transparent;color:#fff;font-size:13.5px;font-weight:600;
+  padding:7px 10px;border-radius:17px;cursor:pointer;transition:all .25s;white-space:nowrap;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.mode-btn.active{background:#fff;color:var(--primary);box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.mode-badge{
+  min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:rgba(255,255,255,.3);
+  font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;
+}
+.mode-btn.active .mode-badge{background:var(--primary);color:#fff}
+.mode-btn .mode-badge.alert{background:var(--danger);color:#fff;animation:pulseB 1.4s infinite}
+@keyframes pulseB{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+
+/* ===== Tabs ===== */
+.tabs{
+  display:flex;gap:8px;overflow-x:auto;padding:9px 12px 7px;
+  background:var(--card);scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex-shrink:0;border:1px solid var(--border);background:var(--bg);
+  color:var(--text-light);font-size:13px;padding:5px 13px;border-radius:16px;
+  cursor:pointer;transition:all .2s;font-weight:500;
+}
+.tab.active{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600}
+.tab .tnum{font-size:10.5px;opacity:.75;margin-left:3px}
+
+/* ===== Search row ===== */
+.search-row{
+  display:flex;gap:8px;padding:0 12px 9px;background:var(--card);
+  border-bottom:1px solid var(--border);align-items:center;
+}
+.search-box{flex:1;position:relative}
+.search-box input{
+  width:100%;border:1.5px solid var(--border);border-radius:18px;background:var(--bg);
+  padding:7px 30px 7px 12px;font-size:13px;outline:none;transition:border-color .2s;
+}
+.search-box input:focus{border-color:var(--primary);background:#fff}
+.search-clear{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:transparent;
+  color:var(--text-muted);font-size:14px;cursor:pointer;padding:2px 6px;display:none;
+}
+.btn-random{
+  flex-shrink:0;border:1.5px solid var(--primary);background:var(--primary-light);color:var(--primary);
+  font-size:12.5px;font-weight:600;padding:6px 11px;border-radius:18px;cursor:pointer;
+  transition:all .2s;white-space:nowrap;
+}
+.btn-random:active{background:var(--primary);color:#fff;transform:scale(.95)}
+
+/* ===== Banners ===== */
+.banner{
+  margin:10px 12px 0;padding:11px 13px;border-radius:12px;font-size:13px;
+  animation:fadeUp .3s ease both;position:relative;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.banner-import{background:var(--info-light);border:1px solid #C9DBF7;color:#1E4E9C}
+.banner-title{font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.banner-dishes{font-size:12px;color:var(--text-light);margin-bottom:9px;line-height:1.7}
+.banner-btns{display:flex;gap:8px}
+.banner-btn{
+  border:none;border-radius:16px;padding:6px 16px;font-size:12.5px;font-weight:600;cursor:pointer;
+}
+.banner-btn.ok{background:var(--info);color:#fff}
+.banner-btn.no{background:transparent;color:var(--text-muted);border:1px solid var(--border)}
+.banner-close{
+  position:absolute;top:8px;right:10px;border:none;background:transparent;color:inherit;
+  opacity:.5;font-size:14px;cursor:pointer;
+}
+
+/* ===== Recent history ===== */
+.recent{margin:10px 12px 0;background:#F3F3F3;border-radius:12px;padding:9px 11px}
+.recent-title{font-size:12px;color:var(--text-muted);font-weight:600;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.recent-note{font-size:10.5px;color:#BBB;font-weight:400}
+.recent-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.recent-chip{
+  font-size:11.5px;color:#AAA;background:#EAEAEA;border-radius:12px;padding:3px 10px;
+  text-decoration:line-through;text-decoration-color:#CCC;
+}
+.recent-chip b{color:#999;font-weight:500;text-decoration:none}
+
+/* ===== Dish grid ===== */
+.content{padding:10px 12px 96px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cat-title{
+  grid-column:1/-1;font-size:13.5px;font-weight:700;color:var(--text);
+  padding:6px 2px 0;display:flex;align-items:center;gap:6px;
+}
+.cat-title .ct-line{flex:1;height:1px;background:var(--border)}
+.cat-title .ct-num{font-size:11px;color:var(--text-muted);font-weight:400}
+.dish-card{
+  background:var(--card);border:2px solid transparent;border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:11px 11px 9px;cursor:pointer;position:relative;
+  transition:all .18s;animation:fadeUp .25s ease both;user-select:none;
+}
+.dish-card:active{transform:scale(.97)}
+.dish-card.selected{border-color:var(--primary);background:var(--primary-light)}
+.dish-card.suggest{border-color:var(--info);box-shadow:0 0 0 3px rgba(43,111,217,.18),var(--shadow);animation:sugPulse 1.2s ease-in-out 3}
+@keyframes sugPulse{0%,100%{box-shadow:0 0 0 3px rgba(43,111,217,.18),var(--shadow)}50%{box-shadow:0 0 0 6px rgba(43,111,217,.10),var(--shadow)}}
+.dc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.dc-emoji{font-size:26px;line-height:1.2}
+.fav-btn{
+  border:none;background:transparent;font-size:16px;cursor:pointer;color:#CCC;
+  padding:0 2px;line-height:1;transition:transform .15s;
+}
+.fav-btn.on{color:#FF4D6A}
+.fav-btn:active{transform:scale(1.3)}
+.dc-name{font-size:14px;font-weight:700;line-height:1.35}
+.dc-name .fav-mark{color:#FF4D6A;font-size:11px;margin-left:2px}
+.dc-desc{
+  font-size:11.5px;color:var(--text-light);margin-top:2px;line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:34px;
+}
+.dc-meta{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;align-items:center}
+.dc-meta span{font-size:10px;color:var(--text-muted);background:var(--bg);border-radius:8px;padding:1.5px 7px}
+.dc-meta .diff-中等{color:var(--warn);background:var(--warn-light)}
+.dc-meta .diff-较难{color:var(--danger);background:var(--danger-light)}
+.dc-meta .diff-简单{color:var(--success);background:var(--success-light)}
+.dc-recent-tag{font-size:10px;color:#AAA;background:#EFEFEF;border-radius:8px;padding:1.5px 7px}
+.dc-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.dc-detail-btn{
+  border:none;background:transparent;color:var(--info);font-size:11.5px;cursor:pointer;padding:2px 0;
+}
+.dc-check{
+  width:22px;height:22px;border-radius:50%;border:2px solid #DDD;background:#fff;
+  color:transparent;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  transition:all .18s;
+}
+.dish-card.selected .dc-check{background:var(--primary);border-color:var(--primary);color:#fff}
+.dc-recent-badge{
+  position:absolute;top:8px;left:8px;font-size:9px;color:#999;background:#F0F0F0;
+  border-radius:7px;padding:1px 6px;
+}
+/* recipe expansion inside card */
+.dc-recipe{grid-column:1/-1;display:block}
+.recipe-box{
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:13px;margin-bottom:4px;animation:fadeUp .25s ease both;
+}
+.rb-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.rb-title{font-size:15px;font-weight:700}
+.rb-close{border:none;background:var(--bg);color:var(--text-light);border-radius:12px;font-size:12px;padding:3px 11px;cursor:pointer}
+.rb-sec{font-size:12.5px;font-weight:700;color:var(--primary);margin:10px 0 5px}
+.rb-ings{display:flex;flex-wrap:wrap;gap:5px}
+.rb-ing{font-size:11.5px;background:var(--bg);border-radius:9px;padding:3px 9px;color:var(--text-light)}
+.rb-ing b{color:var(--text);font-weight:600}
+.rb-step{font-size:12.5px;color:var(--text);margin-bottom:7px;display:flex;gap:7px;line-height:1.65}
+.rb-step .st-no{
+  flex-shrink:0;width:18px;height:18px;border-radius:50%;background:var(--primary-light);
+  color:var(--primary);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px;
+}
+.rb-tip{
+  font-size:12px;background:var(--warn-light);color:#8A6208;border-radius:10px;
+  padding:8px 11px;margin-top:9px;line-height:1.6;
+}
+.rb-add-btn{
+  width:100%;margin-top:10px;border:none;border-radius:12px;padding:9px;font-size:13.5px;font-weight:700;
+  background:var(--primary);color:#fff;cursor:pointer;
+}
+.rb-add-btn.added{background:var(--success-light);color:var(--success)}
+
+/* ===== Kitchen recipes section (expandable cards) ===== */
+.kr-card{
+  background:var(--card);border-radius:12px;box-shadow:var(--shadow);
+  margin-bottom:9px;overflow:hidden;animation:fadeUp .25s ease both;
+}
+.kr-head{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;
+  transition:background .2s;user-select:none;
+}
+.kr-head:active{background:var(--bg)}
+.kr-emoji{font-size:24px;flex-shrink:0}
+.kr-info{flex:1;min-width:0}
+.kr-name{font-size:15px;font-weight:700;color:var(--text)}
+.kr-meta{font-size:11.5px;color:var(--text-muted);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+.kr-meta .diff-简单{color:var(--success)}
+.kr-meta .diff-中等{color:#F57C00}
+.kr-meta .diff-较难{color:#E53935}
+.kr-for{
+  font-size:10.5px;color:var(--primary-dark);background:var(--primary-light);
+  padding:2px 8px;border-radius:9px;margin-top:4px;display:inline-block;
+}
+.kr-arrow{
+  color:var(--text-muted);font-size:11px;transition:transform .25s;flex-shrink:0;
+}
+.kr-card.open .kr-arrow{transform:rotate(180deg)}
+.kr-body{
+  display:none;padding:0 14px 14px;border-top:1px dashed var(--border);background:#FFFCFA;
+}
+.kr-card.open .kr-body{display:block;animation:fadeUp .25s ease}
+.kr-sec{font-size:12.5px;font-weight:700;color:var(--primary);margin:11px 0 6px}
+.kr-ings{display:flex;flex-wrap:wrap;gap:5px}
+.kr-ing{font-size:11.5px;background:var(--bg);border-radius:9px;padding:3px 9px;color:var(--text-light)}
+.kr-ing b{color:var(--text);font-weight:600}
+.kr-step{
+  font-size:12.5px;color:var(--text);margin-bottom:8px;display:flex;gap:8px;line-height:1.7;
+}
+.kr-step .st-no{
+  flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--primary);
+  color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px;
+}
+.kr-tip{
+  font-size:12px;background:var(--warn-light);color:#8A6208;border-radius:10px;
+  padding:9px 12px;margin-top:10px;line-height:1.65;
+}
+.kr-expand-all{
+  display:block;width:100%;margin-bottom:9px;padding:9px;border:1.5px dashed var(--border);
+  border-radius:10px;background:transparent;color:var(--text-light);font-size:12.5px;
+  cursor:pointer;font-weight:600;
+}
+.kr-expand-all:active{background:var(--bg)}
+
+/* ===== Empty state ===== */
+.empty{text-align:center;padding:50px 20px;color:var(--text-muted)}
+.empty .e-emoji{font-size:44px;margin-bottom:10px}
+.empty p{font-size:13px}
+
+/* ===== Bottom bar ===== */
+.bottom-bar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;
+  background:var(--card);border-top:1px solid var(--border);padding:9px 14px calc(9px + env(safe-area-inset-bottom));
+  display:flex;align-items:center;gap:10px;z-index:200;box-shadow:0 -2px 14px rgba(0,0,0,.06);
+}
+.bb-info{flex:1;font-size:13px;color:var(--text-light)}
+.bb-info b{color:var(--primary);font-size:17px}
+.bb-info.submitted b{color:var(--success)}
+.btn-submit{
+  border:none;background:var(--primary);color:#fff;font-size:14.5px;font-weight:700;
+  padding:11px 26px;border-radius:24px;cursor:pointer;transition:all .2s;
+  box-shadow:0 3px 10px rgba(255,107,53,.4);
+}
+.btn-submit:disabled{background:#DDD;box-shadow:none;color:#fff;cursor:not-allowed}
+.btn-submit:not(:disabled):active{transform:scale(.95)}
+.btn-mini{
+  border:1.5px solid var(--primary);background:#fff;color:var(--primary);font-size:12.5px;font-weight:600;
+  padding:8px 13px;border-radius:20px;cursor:pointer;white-space:nowrap;
+}
+.btn-mini:active{background:var(--primary-light);transform:scale(.95)}
+
+/* ===== Toast ===== */
+.toast{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);
+  background:rgba(40,40,40,.92);color:#fff;font-size:13.5px;padding:10px 20px;border-radius:22px;
+  z-index:999;opacity:0;pointer-events:none;transition:all .25s;white-space:nowrap;max-width:88%;
+  overflow:hidden;text-overflow:ellipsis;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== Kitchen ===== */
+.k-content{padding:10px 12px 40px}
+.k-sec-title{
+  font-size:15px;font-weight:700;margin:14px 2px 9px;display:flex;align-items:center;gap:7px;
+}
+.k-sec-title .ks-num{font-size:11.5px;color:#fff;background:var(--primary);border-radius:10px;padding:1px 8px;font-weight:600}
+.person-card{
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:12px;margin-bottom:10px;animation:fadeUp .25s ease both;
+}
+.pc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.pc-name{font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:6px}
+.pc-name .pc-avatar{
+  width:26px;height:26px;border-radius:50%;background:var(--primary-light);color:var(--primary);
+  font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;
+}
+.pc-count{font-size:11.5px;color:var(--text-muted)}
+.pc-del{border:none;background:transparent;color:#CCC;font-size:12px;cursor:pointer;padding:2px 6px}
+.pc-dishes{display:flex;flex-wrap:wrap;gap:6px}
+.pc-dish{
+  font-size:12px;background:var(--bg);border-radius:10px;padding:4px 10px;color:var(--text);
+  cursor:pointer;border:1px solid transparent;
+}
+.pc-dish:active{border-color:var(--primary)}
+.k-empty{
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  text-align:center;padding:44px 20px;color:var(--text-muted);
+}
+.k-empty .ke-emoji{font-size:44px;margin-bottom:10px}
+.k-empty p{font-size:13px;margin-bottom:4px}
+/* shopping list */
+.shop-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px;margin-bottom:10px}
+.shop-cat{
+  font-size:12.5px;font-weight:700;color:var(--primary);margin:10px 0 6px;
+  display:flex;align-items:center;gap:6px;
+}
+.shop-cat:first-child{margin-top:2px}
+.shop-cat .sc-emoji{font-size:14px}
+.shop-item{
+  display:flex;align-items:center;gap:8px;padding:6px 2px;border-bottom:1px dashed var(--border);
+}
+.shop-item:last-child{border-bottom:none}
+.si-check{
+  flex-shrink:0;width:19px;height:19px;border-radius:5px;border:1.5px solid #CCC;background:#fff;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;font-weight:700;
+}
+.si-check.on{background:var(--success);border-color:var(--success);color:#fff}
+.si-info{flex:1;min-width:0}
+.si-name{font-size:13px;font-weight:600}
+.si-name.done{text-decoration:line-through;color:var(--text-muted)}
+.si-amt{font-size:11px;color:var(--text-muted);margin-top:1px;line-height:1.5;word-break:break-all}
+.si-links{display:flex;gap:5px;flex-shrink:0}
+.buy-link{
+  font-size:10.5px;text-decoration:none;border-radius:9px;padding:3px 8px;font-weight:600;
+}
+.buy-link.hema{background:#E7F4FF;color:#0074E0}
+.buy-link.dd{background:#EAF7EC;color:#2FA84F}
+.shop-divider{
+  display:flex;align-items:center;gap:8px;margin:14px 0 8px;color:var(--text-muted);font-size:11px;
+}
+.shop-divider::before,.shop-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.k-actions{display:flex;flex-direction:column;gap:9px;margin-top:16px}
+.btn-k{
+  border:none;border-radius:14px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;
+}
+.btn-k:active{transform:scale(.97)}
+.btn-k.orange{background:var(--primary);color:#fff;box-shadow:0 3px 10px rgba(255,107,53,.35)}
+.btn-k.ghost{background:var(--card);color:var(--text);border:1.5px solid var(--border);box-shadow:var(--shadow)}
+.btn-k.green{background:var(--success);color:#fff;box-shadow:0 3px 10px rgba(76,175,80,.3)}
+.k-row{display:flex;gap:9px}
+.k-row .btn-k{flex:1}
+
+/* ===== Name modal ===== */
+.modal-mask{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;
+  display:flex;align-items:center;justify-content:center;padding:24px;
+}
+.modal{
+  background:#fff;border-radius:18px;padding:22px 20px;width:100%;max-width:320px;
+  animation:fadeUp .3s ease both;text-align:center;
+}
+.modal .m-emoji{font-size:40px;margin-bottom:8px}
+.modal h3{font-size:16.5px;margin-bottom:6px}
+.modal p{font-size:12.5px;color:var(--text-light);margin-bottom:14px;line-height:1.6}
+.modal input{
+  width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px 12px;
+  font-size:15px;text-align:center;outline:none;margin-bottom:8px;
+}
+.modal input:focus{border-color:var(--primary)}
+.modal .m-quick{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.modal .m-quick button{
+  border:1px solid var(--border);background:var(--bg);border-radius:14px;padding:4px 13px;
+  font-size:12.5px;color:var(--text-light);cursor:pointer;
+}
+.modal .m-quick button:active{border-color:var(--primary);color:var(--primary)}
+.btn-modal{
+  width:100%;border:none;background:var(--primary);color:#fff;font-size:15px;font-weight:700;
+  padding:11px;border-radius:24px;cursor:pointer;box-shadow:0 3px 10px rgba(255,107,53,.4);
+}
+.btn-modal:active{transform:scale(.97)}
+
+/* recipe modal in kitchen */
+.rb-modal-wrap{max-height:74vh;overflow-y:auto;width:100%;max-width:400px}
+.rb-modal-wrap .recipe-box{box-shadow:none;margin:0}
+</style>
+</head>
+<body>
+
+<div class="sticky-top" id="stickyTop">
+  <div class="header">
+    <div class="header-top">
+      <div style="flex:1;min-width:0">
+        <div class="h-title">🍽️ 今日菜单 <span class="who" id="whoBadge">点菜中…</span></div>
+        <div class="header-sub" id="headerSub">绍兴人家 · 清鲜为本 · 黄酒入味</div>
+      </div>
+      <div class="h-actions">
+        <button class="icon-btn" id="btnEditName" title="切换身份">👤</button>
+      </div>
+    </div>
+    <div class="mode-switch">
+      <button class="mode-btn active" id="btnModeOrder">🛒 我要点菜</button>
+      <button class="mode-btn" id="btnModeKitchen">👨‍🍳 厨房 <span class="mode-badge" id="kitchenBadge">0</span></button>
+    </div>
+  </div>
+  <div id="orderSticky">
+    <div class="tabs" id="tabs"></div>
+    <div class="search-row">
+      <div class="search-box">
+        <input type="search" id="searchInput" placeholder="🔍 搜索菜名、食材…">
+        <button class="search-clear" id="searchClear">✕</button>
+      </div>
+      <button class="btn-random" id="btnRandom">🎲 今天吃什么？</button>
+    </div>
+  </div>
+</div>
+
+<div id="bannerArea"></div>
+
+<!-- ========== 点菜视图 ========== -->
+<div id="orderView" class="content">
+  <div id="recentArea"></div>
+  <div class="grid" id="dishGrid"></div>
+  <div class="empty hidden" id="orderEmpty">
+    <div class="e-emoji">🔍</div>
+    <p>没有找到相关菜品</p>
+    <p style="font-size:12px;margin-top:4px">换个关键词试试，比如「鱼」「虾」「笋」</p>
+  </div>
+  <div id="recipeSlot"></div>
+</div>
+
+<!-- ========== 厨房视图 ========== -->
+<div id="kitchenView" class="k-content hidden">
+  <div id="kitchenOrders"></div>
+  <div id="kitchenShopping"></div>
+  <div id="kitchenRecipes"></div>
+  <div id="kitchenActions" class="k-actions hidden">
+    <div class="k-row">
+      <button class="btn-k orange" id="btnCopyShop">📋 复制采购清单</button>
+      <button class="btn-k ghost" id="btnCopyOrder">📄 复制完整订单</button>
+    </div>
+    <button class="btn-k green" id="btnNewDay">🌅 新的一天（清空订单重新点菜）</button>
+  </div>
+</div>
+
+<!-- ========== 底部栏 ========== -->
+<div class="bottom-bar" id="bottomBar">
+  <div class="bb-info" id="bbInfo">已选 <b>0</b> 道</div>
+  <div id="bbBtns" style="display:flex;gap:8px;align-items:center"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="modal-mask hidden" id="nameModal">
+  <div class="modal">
+    <div class="m-emoji">👨‍👩‍👧‍👦</div>
+    <h3>你是哪位家人？</h3>
+    <p>输入你的名字开始点菜<br>家人通过「厨房」就能看到你想吃的</p>
+    <input type="text" id="nameInput" maxlength="10" placeholder="比如：爸爸 / 小明">
+    <div class="m-quick" id="nameQuick"></div>
+    <button class="btn-modal" id="btnNameOk">开始点菜 →</button>
+  </div>
+</div>
+<div class="modal-mask hidden" id="recipeModal">
+  <div class="rb-modal-wrap" id="recipeModalBody"></div>
+</div>
+
+<script>
+/* =====================================================
+   绍兴人家 · 今日菜单 V4
+   点菜 + 厨房 + 采购清单，单文件，微信可用
+   ===================================================== */
+'use strict';
+
+/* ---------- 菜品数据（130 道） ---------- */
+const CATS=['海鲜河鲜','荤菜','素菜','汤类','凉菜','主食','早餐'];
+const CAT_EMOJI={'海鲜河鲜':'🦐','荤菜':'🍗','素菜':'🥬','汤类':'🍲','凉菜':'🥒','主食':'🍚','早餐':'🌅'};
+const DISHES=[
+{id:1,name:'清蒸鲈鱼',emoji:'🐟',cat:'海鲜河鲜',desc:'江浙家常头牌，肉嫩味鲜，葱油一激香气四溢',time:'20分钟',diff:'简单',ing:[['鲈鱼','1条约500g','海鲜'],['小葱','3根','蔬菜'],['生姜','1块约15g','蔬菜'],['蒸鱼豉油','3勺','调料'],['绍兴黄酒','2勺','调料'],['食用油','3勺','调料'],['盐','2g','调料']],steps:['【处理】鲈鱼去鳞去鳃去内脏，腹内黑膜刮净（去腥关键），两面各斜划2刀深至骨，用厨房纸吸干水分。','【腌鱼】鱼身内外抹黄酒2勺、盐2g，姜片5片塞入鱼腹与刀口，腌10分钟去腥。','【摆盘】盘底架2根葱段或筷子把鱼身架空，利于蒸汽循环，鱼熟得更均匀。','【蒸制】蒸锅水彻底烧开上大汽后放入鱼，全程大火蒸8分钟（500g标准，每加100g加1分钟），关火虚蒸2分钟，中途绝不开盖。','【倒水】取出倒掉盘中腥水，抽去葱段，挑掉姜片，鱼身铺新鲜葱丝姜丝，沿盘边淋蒸鱼豉油3勺。','【泼油】另起锅烧油3勺至冒青烟（约200℃），均匀泼在葱丝上，「滋啦」一声香气即成。'],tip:'判断熟没熟：筷子插鱼背最厚处能轻松穿透即熟。蒸鱼豉油有咸味，盐千万别多。'},
+{id:2,name:'醉虾(绍兴)',emoji:'🦐',cat:'海鲜河鲜',desc:'绍兴经典冷盘，黄酒浸活虾，虾肉清甜带酒香',time:'30分钟',diff:'中等',ing:[['鲜活河虾','300g','海鲜'],['绍兴黄酒','200ml','调料'],['糟卤','3勺','调料'],['生抽','2勺','调料'],['白糖','1勺','调料'],['姜','3片','蔬菜'],['小葱','2根','蔬菜']],steps:['【养虾】活河虾放清水中养1小时吐净泥沙，捞出剪去虾须虾枪，沥干。','【初醉】虾放入带盖深碗，倒黄酒50ml，盖盖晃匀，静置5分钟让虾微醺不动。','【调汁】黄酒150ml+糟卤3勺+生抽2勺+白糖1勺+姜丝调成醉卤。','【醉制】将醉卤倒入虾碗没过虾身，盖紧放冰箱冷藏30分钟。','【上桌】取出装盘，撒葱段点缀，连卤汁一起上桌。'],tip:'必须用鲜活虾，死虾不能做醉虾。醉制时间别超1小时，否则虾肉过咸发柴。'},
+{id:3,name:'糟溜鱼片(绍兴)',emoji:'🐠',cat:'海鲜河鲜',desc:'绍兴糟卤名菜，鱼片滑嫩，糟香清雅不腻',time:'25分钟',diff:'中等',ing:[['黑鱼片(或鲈鱼片)','300g','海鲜'],['香糟卤','4勺','调料'],['蛋清','1个','蛋奶'],['淀粉','2勺','调料'],['木耳','5朵泡发','干货'],['胡萝卜','半根','蔬菜'],['盐','2g','调料'],['白糖','半勺','调料']],steps:['【上浆】鱼片用盐1g、蛋清1个、淀粉1勺抓匀上浆，静置10分钟，鱼片更滑嫩。','【滑油】锅烧宽油至四成热（120℃，筷子入油冒小泡），下鱼片滑至变白卷曲约30秒，捞出控油。','【炒辅料】锅留底油，下木耳、胡萝卜片翻炒1分钟至断生。','【糟溜】倒入鱼片，加香糟卤4勺、白糖半勺、盐1g，轻推匀（别翻炒碎）。','【勾芡】淀粉1勺+水2勺调水淀粉淋入，汤汁浓稠包住鱼片即出锅。'],tip:'香糟卤本身有咸味，盐要少放。全程动作要轻，鱼片易碎。'},
+{id:4,name:'红烧带鱼',emoji:'🐟',cat:'海鲜河鲜',desc:'东海带鱼段红烧，咸鲜微甜，下饭一绝',time:'30分钟',diff:'中等',ing:[['带鱼','2条约500g','海鲜'],['生姜','4片','蔬菜'],['大蒜','4瓣','蔬菜'],['小葱','3根','蔬菜'],['生抽','2勺','调料'],['老抽','半勺','调料'],['绍兴黄酒','3勺','调料'],['香醋','1勺','调料'],['白糖','1勺','调料'],['淀粉','适量','调料']],steps:['【处理】带鱼去头尾内脏，刮净表面银脂（银脂腥），切5cm段，用黄酒1勺、盐1g腌10分钟，拍薄淀粉。','【煎鱼】锅烧热倒油，油热后下带鱼段中火煎，别急着翻，煎3分钟定型金黄后翻面再煎2分钟，盛出。','【爆香】锅留底油，下姜片蒜瓣葱段小火爆香。','【烧制】放入带鱼，沿锅边淋黄酒2勺、生抽2勺、老抽半勺、香醋1勺，加白糖1勺，倒热水没过鱼身一半，大火烧开转中火烧8分钟。','【收汁】转大火收汁，晃动锅身让汤汁浓稠挂匀鱼段，撒葱花出锅。'],tip:'煎鱼前锅要烧得很热、鱼身要干，这样不粘不破。中途翻动一次即可，翻多易碎。'},
+{id:5,name:'糖醋带鱼',emoji:'🐠',cat:'海鲜河鲜',desc:'外酥里嫩，酸甜挂汁，孩子最爱的一道鱼',time:'30分钟',diff:'中等',ing:[['带鱼','2条约500g','海鲜'],['番茄酱','3勺','调料'],['白糖','3勺','调料'],['香醋','3勺','调料'],['生抽','1勺','调料'],['淀粉','适量','调料'],['生姜','3片','蔬菜'],['熟白芝麻','1勺','干货']],steps:['【腌鱼】带鱼处理干净切段，加黄酒1勺、姜片、盐1g腌15分钟，沥干后拍匀干淀粉。','【炸鱼】油烧至六成热（180℃），下带鱼段炸4分钟至金黄酥脆，捞出；油温升高复炸30秒更酥。','【调汁】番茄酱3勺+白糖3勺+香醋3勺+生抽1勺+清水4勺调匀成糖醋汁。','【熬汁】锅留少许底油，倒入糖醋汁小火熬至冒大泡、浓稠能挂勺。','【裹汁】倒入炸好的带鱼快速翻匀，让每块鱼裹满酱汁，撒白芝麻出锅。'],tip:'糖醋汁比例「番茄酱:糖:醋=1:1:1」是万能公式。裹汁动作要快，久了鱼回软。'},
+{id:6,name:'葱油海瓜子',emoji:'🐚',cat:'海鲜河鲜',desc:'舟山宁波风味，壳薄肉鲜，葱油一淋鲜掉眉毛',time:'15分钟',diff:'简单',ing:[['海瓜子','500g','海鲜'],['小葱','4根','蔬菜'],['生姜','3片','蔬菜'],['生抽','2勺','调料'],['白糖','半勺','调料'],['食用油','3勺','调料'],['绍兴黄酒','1勺','调料']],steps:['【吐沙】海瓜子放淡盐水（水500ml+盐5g）中静置2小时吐沙，搓洗外壳沥干。','【焯水】锅中水烧开加黄酒1勺，倒入海瓜子焯1分钟，壳刚张开立刻捞出（张口即熟，久煮肉老）。','【摆盘】装盘，挑出没开口的死贝丢掉，淋生抽2勺+白糖半勺调的汁。','【铺葱】海瓜子上铺大量葱丝、姜丝。','【泼油】烧油3勺至冒烟，泼在葱姜丝上激出香气即可。'],tip:'没开口的多半是死贝，别硬掰。焯水时间宁短勿长，保持嫩度。'},
+{id:7,name:'蒜蓉粉丝蒸扇贝',emoji:'🐚',cat:'海鲜河鲜',desc:'宴客硬菜，蒜香浓郁，粉丝吸满海鲜汁',time:'20分钟',diff:'简单',ing:[['扇贝','8只','海鲜'],['龙口粉丝','1把约50g','干货'],['大蒜','2头','蔬菜'],['小米椒','2根','蔬菜'],['小葱','2根','蔬菜'],['生抽','2勺','调料'],['白糖','半勺','调料'],['食用油','4勺','调料']],steps:['【泡粉丝】粉丝温水泡15分钟至软，剪成短段垫在每个扇贝壳上。','【洗扇贝】扇贝肉取出撕去黑色内脏和裙边硬边，洗净放回壳上粉丝之上。','【炒蒜蓉】蒜切末，2勺油小火炒一半蒜末至金黄（金蒜），关火拌入另一半生蒜（银蒜），加生抽2勺、白糖半勺调匀。','【铺料】将金银蒜蓉铺在每只扇贝上，点缀小米椒圈。','【蒸制】水开后上锅大火蒸6分钟，出锅撒葱花，淋1勺烧热的油激香。'],tip:'金银蒜（一半炒黄一半生蒜）是蒜香有层次的秘诀。扇贝别蒸过头，肉缩就老了。'},
+{id:8,name:'盐水虾',emoji:'🦐',cat:'海鲜河鲜',desc:'原汁原味，咸鲜弹牙，绍兴人待客冷盘',time:'15分钟',diff:'简单',ing:[['基围虾(或河虾)','400g','海鲜'],['生姜','4片','蔬菜'],['小葱','3根','蔬菜'],['花椒','1小撮','调料'],['盐','15g','调料'],['绍兴黄酒','2勺','调料']],steps:['【处理】虾剪去虾须，挑去虾线，洗净沥干。','【煮卤】锅中加水800ml，放姜片、葱结、花椒、盐15g、黄酒2勺，大火烧开煮3分钟出香味。','【煮虾】倒入虾，保持大火煮2-3分钟，虾身完全变红弯曲即熟，立刻关火。','【浸泡】虾在热卤中再浸5分钟入味，捞出。','【冰镇】迅速过冰水30秒，虾肉更紧实弹牙，沥干装盘。'],tip:'煮虾宁短勿长，虾尾贴到虾头就是煮老了。卤水咸度要比平时喝的汤咸一点才入味。'},
+{id:9,name:'油焖大虾',emoji:'🦐',cat:'海鲜河鲜',desc:'虾红油亮，壳酥肉嫩，咸甜浓郁连壳都想嚼',time:'20分钟',diff:'简单',ing:[['大虾(明虾)','500g','海鲜'],['番茄酱','2勺','调料'],['生抽','2勺','调料'],['白糖','2勺','调料'],['绍兴黄酒','2勺','调料'],['大蒜','3瓣','蔬菜'],['小葱','2根','蔬菜'],['食用油','3勺','调料']],steps:['【处理】大虾剪去虾须虾枪，开背挑出虾线（开背更入味），洗净用厨房纸吸干。','【煎虾】锅中油3勺烧热，下虾中火煎，用锅铲轻压虾头挤出虾油，两面煎红约3分钟，虾油红亮是这道菜的灵魂。','【调味】下蒜末爆香，淋黄酒2勺、生抽2勺、番茄酱2勺、白糖2勺翻炒均匀。','【焖制】加小半碗热水，盖盖中火焖3分钟。','【收汁】开盖大火收汁，不停翻动让浓汁裹满每只虾，撒葱段翻两下出锅。'],tip:'虾头里的虾油一定要煎出来，颜色红亮全靠它。收汁要勤翻防止糖焦糊。'},
+{id:10,name:'酱爆螺蛳',emoji:'🐌',cat:'海鲜河鲜',desc:'清明螺赛肥鹅，酱香微辣，嗦一口满嘴鲜',time:'40分钟',diff:'中等',ing:[['螺蛳','750g','海鲜'],['郫县豆瓣酱','1勺','调料'],['黄豆酱','1勺','调料'],['干辣椒','5个','调料'],['生姜','4片','蔬菜'],['大蒜','5瓣','蔬菜'],['白糖','1勺','调料'],['绍兴黄酒','3勺','调料'],['小葱','3根','蔬菜']],steps:['【养螺】螺蛳提前1天放清水滴几滴油养着吐泥，剪去尾部（便于嗦出肉），搓洗3遍至水清。','【爆香】锅热油3勺，下豆瓣酱1勺、黄豆酱1勺小火炒出红油和酱香，再下姜蒜片、干辣椒爆香。','【下螺】倒入螺蛳转大火翻炒2分钟，淋黄酒3勺沿锅边激香。','【烧制】加生抽1勺、白糖1勺、热水小半碗，盖盖中火焖5分钟让螺肉入味。','【收汁】开盖大火收汁至浓稠挂在螺壳上，撒葱段翻匀出锅。'],tip:'螺蛳必须彻底煮熟（全程至少8分钟）才安全。尾部剪掉炒时才进味，嗦着才轻松。'},
+{id:11,name:'清蒸小黄鱼',emoji:'🐟',cat:'海鲜河鲜',desc:'东海小黄鱼，蒜瓣肉细嫩，清蒸最能吊鲜',time:'20分钟',diff:'简单',ing:[['小黄鱼','3条约450g','海鲜'],['生姜','1块','蔬菜'],['小葱','3根','蔬菜'],['雪菜(雪里蕻)','50g','蔬菜'],['绍兴黄酒','2勺','调料'],['蒸鱼豉油','2勺','调料'],['猪油或食用油','1勺','调料']],steps:['【处理】小黄鱼去鳞去内脏洗净，鱼身两面各划一刀，用黄酒2勺、姜片抹匀腌10分钟。','【配料】雪菜洗净挤干切碎，用1勺油加半勺糖炒香备用（雪菜提鲜解腥，是宁波蒸鱼定番）。','【摆盘】盘底铺姜片葱段架起鱼身，鱼上铺炒好的雪菜。','【蒸制】水开上汽后放入，大火蒸10分钟，关火虚蒸2分钟。','【出锅】倒掉盘底腥水，淋蒸鱼豉油2勺，撒葱丝，浇1勺热油激香。'],tip:'没有雪菜可省略，直接清蒸也一样鲜。小黄鱼眼珠凸出、眼球清亮的新鲜，蒸前一定检查。'},
+{id:12,name:'红烧鲫鱼',emoji:'🐟',cat:'海鲜河鲜',desc:'河鲜家常味，酱香入骨，鱼汤拌饭一绝',time:'30分钟',diff:'中等',ing:[['鲫鱼','2条约500g','海鲜'],['生姜','5片','蔬菜'],['大蒜','4瓣','蔬菜'],['小葱','3根','蔬菜'],['生抽','2勺','调料'],['老抽','半勺','调料'],['香醋','1勺','调料'],['白糖','1勺','调料'],['绍兴黄酒','3勺','调料']],steps:['【处理】鲫鱼去鳞鳃内脏，腹内黑膜刮净，鱼身斜划3刀，擦干水分（防煎时溅油）。','【煎鱼】热锅冷油滑锅后倒出，重新倒油烧至七成热，下鲫鱼中火煎3分钟不动，晃锅鱼能滑动再翻面煎2分钟。','【爆香】鱼推至锅边，下姜片蒜瓣葱白爆香，淋黄酒3勺、香醋1勺（醋去腥且使骨酥）。','【烧制】加生抽2勺、老抽半勺、白糖1勺，倒热水没过鱼身，大火烧开转中火烧10分钟，中途翻面一次。','【收汁】大火收汁至浓稠，边收边用勺把汁淋在鱼身上，撒葱花出锅。'],tip:'一定要加热水，加冷水鱼汤不白且肉易腥。煎鱼前用姜片擦锅底可有效防粘。'},
+{id:13,name:'西湖醋鱼(浙江)',emoji:'🐟',cat:'海鲜河鲜',desc:'杭帮名菜，糖醋芡汁亮如琥珀，鱼肉嫩似豆腐',time:'30分钟',diff:'较难',ing:[['草鱼(或鲈鱼)','1条约700g','海鲜'],['香醋','4勺','调料'],['白糖','3勺','调料'],['生抽','2勺','调料'],['绍兴黄酒','2勺','调料'],['生姜','1块','蔬菜'],['淀粉','2勺','调料']],steps:['【处理】鱼宰杀洗净，从脊背剖成两片（腹部相连），鱼身斜片成厚约2cm的大片仍连在脊骨上，清水浸泡10分钟去血水。','【氽水】锅中水烧开，加姜片、黄酒2勺，手提鱼尾将鱼片浸入沸水，保持微沸（不能大滚）氽3-4分钟至鱼肉刚熟，捞出摆盘恢复鱼形。','【调汁】香醋4勺+白糖3勺+生抽2勺+水3勺+淀粉2勺调匀糖醋芡汁。','【熬芡】舀锅中氽鱼的热汤约150ml入炒锅，倒入调好的芡汁，小火推熬至浓稠起泡、透明发亮。','【浇汁】将滚烫的糖醋芡汁均匀浇在鱼身上，应能挂住鱼片缓缓流下。'],tip:'正宗西湖醋鱼不放油、不煎鱼，全靠氽熟+糖醋芡。芡汁要熬到透明发亮才挂得住。'}
+,
+{id:14,name:'蛤蜊蒸蛋',emoji:'🥚',cat:'海鲜河鲜',desc:'蛋羹嫩滑如布丁，蛤蜊开口鲜汁渗入，颜值口味双绝',time:'25分钟',diff:'简单',ing:[['蛤蜊','300g','海鲜'],['鸡蛋','3个','蛋奶'],['生姜','2片','蔬菜'],['小葱','1根','蔬菜'],['蒸鱼豉油','1勺','调料'],['香油','几滴','调料'],['盐','1g','调料']],steps:['【吐沙】蛤蜊放淡盐水（水400ml+盐4g）滴2滴油，静置2小时吐沙后洗净。','【蛋液】鸡蛋3个打散，加1.5倍温水（约200ml，40℃不烫手）、盐1g搅匀，过筛2次去泡（蛋羹细腻的关键）。','【焯蛤蜊】另锅水开加姜片，下蛤蜊煮至刚开口（约1分钟）捞出，摆入蛋液碗中。','【蒸制】蛋液碗盖盘子或覆保鲜膜扎几个孔，水开后上锅中火蒸10分钟，关火焖3分钟。','【调味】出锅淋蒸鱼豉油1勺、香油几滴，撒葱花。'],tip:'蛋液一定过筛、蒸时盖盘，才能蒸出镜面蛋羹。蛤蜊先焯开口再摆，避免蒸时出水冲散蛋液。'},
+{id:15,name:'酸菜鱼',emoji:'🍲',cat:'海鲜河鲜',desc:'酸香开胃，鱼片滑嫩，连汤都能喝光',time:'40分钟',diff:'中等',ing:[['黑鱼(或草鱼)','1条约900g','海鲜'],['酸菜','300g','蔬菜'],['泡椒','5个','调料'],['生姜','1块','蔬菜'],['大蒜','5瓣','蔬菜'],['蛋清','1个','蛋奶'],['淀粉','2勺','调料'],['花椒','1小撮','调料'],['干辣椒','5个','调料'],['绍兴黄酒','2勺','调料']],steps:['【片鱼】鱼洗净，片下两片鱼肉斜刀片成3mm薄片，鱼骨斩段；鱼片加盐1g、蛋清1个、淀粉1勺、黄酒1勺抓匀腌15分钟。','【炒酸菜】酸菜洗净挤干切段，干锅（不放油）中火煸2分钟去水汽，盛出。','【煎骨熬汤】锅中油烧热，下鱼骨煎至两面微黄，下姜蒜泡椒爆香，倒入开水1200ml，大火熬8分钟至汤色奶白。','【煮酸菜】捞出鱼骨垫碗底，汤中下酸菜煮5分钟出酸香，连汤倒入碗中。','【烫鱼片】汤保持微沸，将鱼片逐片下锅，煮1-2分钟至鱼片变白卷曲立刻连汤倒回碗中。','【激油】鱼片上撒花椒、干辣椒段、蒜末，烧2勺热油泼上激香。'],tip:'鱼片要顺着纹理斜刀片，煮时微沸即可，滚沸会把鱼片冲碎。酸菜先干煸香味才浓。'},
+{id:16,name:'清蒸大闸蟹',emoji:'🦀',cat:'海鲜河鲜',desc:'秋风起蟹脚痒，原蒸最鲜，配姜醋蘸料',time:'25分钟',diff:'简单',ing:[['大闸蟹','4只','海鲜'],['生姜','1大块','蔬菜'],['香醋','4勺','调料'],['白糖','1勺','调料'],['绍兴黄酒','3勺','调料'],['紫苏叶','4片(可选)','干货']],steps:['【刷洗】大闸蟹用刷子流水刷净蟹壳蟹腹蟹钳，不解绑绳（防蒸时挣扎断腿）。','【摆蟹】蟹肚朝上放入蒸屉（防蟹黄流出），每只蟹肚上放1片姜，有紫苏叶的垫在蟹下。','【蒸制】冷水下锅，水中加黄酒3勺，水开后大火蒸15分钟（3两蟹12分钟，4两以上15-18分钟）。','【蘸料】生姜切细末，加香醋4勺、白糖1勺调成姜醋汁（蟹性寒，姜醋去寒提鲜）。','【上桌】关火焖2分钟取出，趁热配姜醋食用。'],tip:'蟹肚朝上是关键，蟹黄不会流失。死蟹有毒素绝对不能吃，蒸前触碰蟹眼会缩才是活的。'},
+{id:17,name:'梅干菜蒸鱼(绍兴)',emoji:'🐟',cat:'海鲜河鲜',desc:'绍兴灵魂梅干菜配河鱼，咸香醇厚，最地道的家乡味',time:'35分钟',diff:'简单',ing:[['鲈鱼(或鳊鱼)','1条约500g','海鲜'],['梅干菜','80g','干货'],['五花肉片','50g','肉类'],['生姜','3片','蔬菜'],['绍兴黄酒','2勺','调料'],['白糖','1勺','调料'],['生抽','1勺','调料'],['小葱','2根','蔬菜']],steps:['【泡菜】梅干菜温水泡20分钟，反复搓洗去沙，挤干切碎；锅不放油干煸2分钟出香。','【处理鱼】鱼洗净两面划刀，抹黄酒2勺、姜片腌10分钟。','【炒料】少许油下五花肉片煸出油脂，下梅干菜炒2分钟，加白糖1勺、生抽1勺炒匀。','【铺料】鱼装盘，将梅干菜肉末均匀铺在鱼身上。','【蒸制】水开上汽后大火蒸12分钟，关火虚蒸2分钟。','【出锅】倒掉多余汤汁，撒葱花，淋1勺热油激香。'],tip:'梅干菜本身很咸，生抽和盐都要手下留情。选乌黑油亮、闻着有干菜清香的梅干菜为上品。'},
+{id:18,name:'番茄鱼片',emoji:'🍅',cat:'海鲜河鲜',desc:'番茄汤底酸甜鲜浓，鱼片嫩滑，汤泡饭绝配',time:'25分钟',diff:'简单',ing:[['龙利鱼(或黑鱼片)','350g','海鲜'],['番茄','3个约400g','蔬菜'],['番茄酱','1勺','调料'],['生姜','3片','蔬菜'],['蛋清','1个','蛋奶'],['淀粉','1勺','调料'],['小葱','2根','蔬菜'],['白糖','1勺','调料']],steps:['【腌鱼】鱼片加盐1g、蛋清1个、淀粉1勺、黄酒1勺抓匀腌10分钟。','【炒番茄】番茄顶部划十字烫水去皮，切小块；锅中油2勺下番茄块中火炒4分钟至出沙软烂，加番茄酱1勺炒匀。','【煮汤】加开水800ml、姜片，大火烧开转中火煮5分钟，加盐2g、白糖1勺调味。','【下鱼片】汤转小火保持微沸，鱼片逐片下锅，煮1-2分钟变白即熟，立刻关火。','【出锅】撒葱花，滴几滴香油，连汤带鱼盛出。'],tip:'番茄一定要炒出沙再加水，汤才浓。鱼片下锅后别搅动，定型后再轻推。'},
+{id:19,name:'油爆虾(浙江)',emoji:'🦐',cat:'海鲜河鲜',desc:'杭绍名菜，三次热油爆壳酥可食，酱汁浓亮甜咸适口',time:'20分钟',diff:'较难',ing:[['中等河虾','400g','海鲜'],['生抽','2勺','调料'],['老抽','半勺','调料'],['香醋','1勺','调料'],['白糖','2勺','调料'],['绍兴黄酒','2勺','调料'],['生姜','3片','蔬菜'],['小葱','2根','蔬菜'],['食用油','适量','调料']],steps:['【处理】河虾剪须挑线洗净，务必沥干或用纸吸干（防炸锅溅油）。','【调汁】生抽2勺+老抽半勺+香醋1勺+白糖2勺+黄酒2勺+清水2勺提前调匀（爆炒时间极短，汁要预先调好）。','【初炸】油烧至八成热（200℃，油面波动冒青烟），下虾炸1分钟至壳红，捞出。','【复炸】油温回升再下虾复炸30秒，捞出——两炸使壳酥肉嫩。','【爆汁】锅留底油，下姜末爆香，倒入调好的汁烧开冒大泡，立刻倒入虾快速颠锅翻匀10秒，撒葱段出锅。'],tip:'「油爆」讲究快：汁一下锅虾就翻匀立刻起锅，壳才能保持酥脆。虾要选中等大小，太大不易炸透壳。'},
+{id:20,name:'干煎小黄鱼',emoji:'🐠',cat:'海鲜河鲜',desc:'外皮焦香酥脆，肉嫩刺少，煎到金黄最下饭',time:'20分钟',diff:'简单',ing:[['小黄鱼','4条约400g','海鲜'],['生姜','3片','蔬菜'],['小葱','2根','蔬菜'],['盐','3g','调料'],['绍兴黄酒','1勺','调料'],['白胡椒粉','少许','调料'],['食用油','3勺','调料']],steps:['【处理】小黄鱼去鳞去内脏洗净，鱼身两面各斜划2刀，用盐3g、黄酒1勺、白胡椒粉、姜片抹匀腌20分钟。','【擦干】腌好的鱼用厨房纸彻底吸干表面水分（煎鱼不破皮的关键）。','【热锅】锅烧至冒烟，用姜片擦一遍锅底，倒油3勺烧至七成热。','【煎鱼】下小黄鱼中火煎4分钟绝对不动，晃锅鱼能滑动、底面金黄再翻面煎3分钟。','【出锅】两面金黄酥脆后盛出，撒葱段点缀，可配椒盐或柠檬汁。'],tip:'判断翻面时机：鱼能在锅中自由滑动、边缘呈金黄。中途翻动超过2次皮必破。'},
+{id:21,name:'蒜蓉生蚝',emoji:'🦪',cat:'海鲜河鲜',desc:'烧烤摊招牌在家做，蒜香扑鼻，一口一个鲜',time:'15分钟',diff:'简单',ing:[['生蚝','10只','海鲜'],['大蒜','2头','蔬菜'],['小米椒','2根','蔬菜'],['小葱','2根','蔬菜'],['生抽','2勺','调料'],['白糖','半勺','调料'],['食用油','4勺','调料'],['绍兴黄酒','1勺','调料']],steps:['【开蚝】生蚝刷净外壳，用蚝刀从侧缝撬开，断开闭壳肌，蚝肉冲去碎壳，留半壳盛蚝肉。','【金银蒜】蒜剁末，2勺油小火炒一半蒜末至金黄出香，关火拌入另一半生蒜末，加生抽2勺、白糖半勺、小米椒圈调匀。','【铺料】每只生蚝上铺1勺金银蒜蓉。','【蒸制】水开后上锅大火蒸5分钟（大生蚝6分钟），蚝肉刚缩边即熟。','【激香】出锅撒葱花，每只淋几滴热油激出蒜香葱香。'],tip:'蒸5分钟足够，久蒸蚝肉缩水变老。开蚝时垫块毛巾防刀滑伤手。'},
+{id:22,name:'椒盐皮皮虾',emoji:'🦞',cat:'海鲜河鲜',desc:'外壳椒盐酥香，虾肉清甜，吮指停不下来',time:'20分钟',diff:'中等',ing:[['皮皮虾','500g','海鲜'],['玉米淀粉','3勺','调料'],['花椒','1勺','调料'],['盐','1勺','调料'],['大蒜','4瓣','蔬菜'],['小米椒','2根','蔬菜'],['小葱','2根','蔬菜'],['食用油','适量','调料']],steps:['【处理】皮皮虾洗净沥干，用厨房纸吸干水分，剪去两侧尖刺。','【椒盐】花椒1勺+盐1勺干锅小火焙3分钟出香，擀成细末备用。','【拍粉】皮皮虾薄薄拍一层玉米淀粉，抖掉多余粉。','【油炸】油烧至七成热（190℃），下皮皮虾炸3分钟至壳红酥脆，捞出；油温升高复炸30秒逼油更酥。','【炒料】锅留底油，下蒜末、小米椒圈小火爆香，倒入皮皮虾，撒椒盐粉和葱花，颠锅翻匀出锅。'],tip:'复炸是酥脆关键。吃时从虾腹两侧剪开壳，整条虾肉轻松脱出。'},
+{id:23,name:'红烧鳗鱼',emoji:'🐍',cat:'海鲜河鲜',desc:'河鳗胶质满满，酱香浓郁，绍兴老做法',time:'35分钟',diff:'中等',ing:[['河鳗','1条约600g','海鲜'],['生姜','1块','蔬菜'],['大蒜','6瓣','蔬菜'],['小葱','3根','蔬菜'],['生抽','3勺','调料'],['老抽','1勺','调料'],['绍兴黄酒','4勺','调料'],['白糖','2勺','调料'],['白胡椒粉','少许','调料']],steps:['【处理】河鳗请摊主宰杀，回家用70℃热水烫一下刮去表面白膜（去腥关键），切4cm段。','【焯水】冷水下锅加姜片黄酒2勺，水开后煮1分钟捞出温水冲净。','【爆香】锅中油2勺，下姜片、整粒蒜瓣小火煎至蒜面金黄。','【烧制】下鳗段轻煎1分钟，淋黄酒2勺、生抽3勺、老抽1勺，加白糖2勺、白胡椒粉，倒热水没过鱼身，大火烧开转中小火烧15分钟。','【收汁】大火收汁至浓稠发亮挂在鳗段上（鳗鱼胶质多，汁自然浓），撒葱段出锅。'],tip:'鳗鱼皮娇嫩，烧时少翻动，晃锅代替铲翻。表面白膜一定要刮净，否则腥味重。'},
+{id:24,name:'清蒸多宝鱼',emoji:'🐟',cat:'海鲜河鲜',desc:'肉厚刺少胶质足，宴客体面，清蒸最显鲜',time:'20分钟',diff:'简单',ing:[['多宝鱼','1条约600g','海鲜'],['生姜','1块','蔬菜'],['小葱','3根','蔬菜'],['红椒','少许','蔬菜'],['蒸鱼豉油','3勺','调料'],['绍兴黄酒','2勺','调料'],['食用油','3勺','调料']],steps:['【处理】多宝鱼去内脏去鳃洗净，撕掉鱼身两侧腥味重的菱形皮膜（可请摊主处理），鱼身划几刀，抹黄酒2勺腌8分钟。','【摆盘】盘底铺姜片葱段架空鱼身，鱼上再放2片姜。','【蒸制】水彻底烧开上汽后放入，大火蒸8-9分钟（600g标准），关火虚蒸2分钟。','【换料】倒掉盘中腥水，去掉旧葱姜，鱼身铺新切的葱丝、姜丝、红椒丝。','【泼油】淋蒸鱼豉油3勺沿盘边流入，烧油3勺至冒烟泼在葱姜丝上。'],tip:'多宝鱼鳍边胶质最厚最香，别剪掉。蒸的时间宁少1分钟不要多1分钟，肉才嫩。'},
+{id:25,name:'酱爆鱿鱼',emoji:'🦑',cat:'海鲜河鲜',desc:'花刀鱿鱼卷如麦穗，酱香浓辣爽脆',time:'15分钟',diff:'中等',ing:[['鲜鱿鱼','2条约400g','海鲜'],['青椒','1个','蔬菜'],['洋葱','半个','蔬菜'],['郫县豆瓣酱','1勺','调料'],['黄豆酱','1勺','调料'],['生抽','1勺','调料'],['白糖','1勺','调料'],['绍兴黄酒','1勺','调料'],['淀粉','1勺','调料'],['大蒜','3瓣','蔬菜']],steps:['【改刀】鱿鱼撕去外膜，内面朝上先斜刀45°切平行花刀（切2/3深不切断），再直刀切交叉纹，改成长方块。','【焯卷】水烧开下鱿鱼块，烫10-15秒卷成麦穗状立刻捞出过凉（时间一长就老）。','【调汁】生抽1勺+黄豆酱1勺+白糖1勺+淀粉1勺+水2勺调匀。','【爆炒】热锅宽油，下豆瓣酱和蒜片爆红油，下青椒块洋葱块大火炒1分钟断生。','【合炒】倒入鱿鱼卷，淋调好的酱汁和黄酒1勺，大火快速翻炒20秒裹匀酱汁立即出锅。'],tip:'鱿鱼全程接触高温不超过1分钟才脆嫩。花刀切内面（有膜那面切不卷），焯水卷起即捞。'},
+{id:26,name:'河虾炒蛋',emoji:'🍳',cat:'海鲜河鲜',desc:'绍兴初夏时鲜，虾肉弹牙蛋香浓，快手又下饭',time:'12分钟',diff:'简单',ing:[['小河虾','200g','海鲜'],['鸡蛋','4个','蛋奶'],['小葱','2根','蔬菜'],['绍兴黄酒','1勺','调料'],['盐','2g','调料'],['白胡椒粉','少许','调料'],['食用油','3勺','调料']],steps:['【处理】河虾洗净沥干，剪去长须，加黄酒1勺、白胡椒粉抓匀腌5分钟。','【打蛋】鸡蛋打散，加盐1g、葱花切碎拌入。','【炒虾】锅中油1勺烧热，下河虾中大火炒1-2分钟至全部变红，盛出稍晾。','【合炒】虾倒入蛋液中拌匀；锅洗净加油2勺烧至六成热，倒入虾蛋液，待底部凝固后用铲轻推翻炒。','【出锅】炒至蛋液刚凝固还略带湿润立刻关火出锅，余温会让蛋全熟。'],tip:'蛋炒到八分熟就起锅最嫩。小虾不用剥壳，壳软钙多，绍兴人就这么吃。'}
+,
+{id:27,name:'番茄虾仁',emoji:'🍤',cat:'海鲜河鲜',desc:'红白相间酸甜鲜，虾仁弹嫩，孩子抢着吃',time:'15分钟',diff:'简单',ing:[['鲜虾仁','300g','海鲜'],['番茄','2个约300g','蔬菜'],['鸡蛋清','1个','蛋奶'],['淀粉','1勺','调料'],['番茄酱','1勺','调料'],['白糖','1勺','调料'],['小葱','1根','蔬菜'],['大蒜','2瓣','蔬菜']],steps:['【腌虾】虾仁挑去虾线洗净，用纸吸干，加盐1g、蛋清1个、淀粉1勺抓匀腌10分钟。','【去皮】番茄顶部划十字，开水烫30秒撕皮，切小丁。','【滑虾仁】锅热油2勺，下虾仁中火滑炒1分钟至变色卷曲，盛出。','【炒番茄】余油下蒜末爆香，倒番茄丁中火炒3分钟至出汁软烂，加番茄酱1勺、白糖1勺、盐1g炒匀。','【合炒】倒回虾仁翻炒30秒裹匀茄汁，撒葱花出锅。'],tip:'虾仁吸干水分再上浆才弹牙。番茄炒到出沙浓稠，成菜才有漂亮的红汁。'},
+{id:28,name:'葱烧海参',emoji:'🌰',cat:'海鲜河鲜',desc:'鲁菜经典家常版，葱香浓郁，海参软糯挂汁',time:'30分钟',diff:'较难',ing:[['泡发海参','4条','海鲜'],['大葱','2根','蔬菜'],['生姜','3片','蔬菜'],['蚝油','2勺','调料'],['生抽','1勺','调料'],['老抽','半勺','调料'],['白糖','1勺','调料'],['淀粉','1勺','调料'],['高汤或清水','200ml','调料']],steps:['【焯海参】泡发海参冷水下锅，加姜片黄酒1勺，水开煮2分钟捞出沥干（去腥定型）。','【炸葱油】大葱白切5cm段，锅中油3勺小火将葱段煎至两面金黄焦香，葱段盛出，葱油留锅。','【烧制】葱油中加蚝油2勺、生抽1勺、老抽半勺、白糖1勺、高汤200ml烧开，下海参和葱段，中小火烧5分钟入味。','【收汁】将海参葱段捞出摆盘，汤汁留锅。','【勾芡】淀粉1勺+水2勺调匀淋入汤汁，熬至浓稠发亮，浇在海参上。'],tip:'海参本身无味，全靠葱油和汤汁煨味。葱段要煎到金黄微焦才出浓香。'},
+{id:29,name:'白灼八爪鱼',emoji:'🐙',cat:'海鲜河鲜',desc:'粤式白灼，脆嫩弹牙，蘸姜葱豉油最鲜',time:'15分钟',diff:'简单',ing:[['小章鱼(八爪鱼)','500g','海鲜'],['生姜','1块','蔬菜'],['小葱','4根','蔬菜'],['绍兴黄酒','2勺','调料'],['生抽','3勺','调料'],['食用油','2勺','调料'],['冰水','1盆','调料']],steps:['【清洗】八爪鱼加2勺盐反复揉搓2分钟去表面黏液，冲洗干净，摘去内脏和嘴牙。','【改刀】大的对半切开，小个的整只，头部划刀便于熟透。','【白灼】锅中水烧开，加姜片、葱结、黄酒2勺，下八爪鱼焯1-2分钟至触须卷曲变色立刻捞出（小章鱼1分钟足够）。','【冰镇】迅速投入冰水浸2分钟，肉质瞬间收紧变脆弹。','【蘸料】姜切末+葱白末，淋2勺烧热的油激香，加生抽3勺调成姜葱豉油。','【装盘】八爪鱼沥干摆盘，配蘸料上桌。'],tip:'焯水是成败关键：超过2分钟就橡皮咬不动。冰水一定要够冰，脆感全靠温差。'},
+{id:30,name:'蒜香银鱼',emoji:'🐟',cat:'海鲜河鲜',desc:'太湖三白之一，整条无骨酥香，补钙佳品',time:'15分钟',diff:'简单',ing:[['银鱼','300g','海鲜'],['大蒜','5瓣','蔬菜'],['青红椒','各半个','蔬菜'],['淀粉','3勺','调料'],['盐','2g','调料'],['白胡椒粉','少许','调料'],['食用油','适量','调料']],steps:['【清洗】银鱼清水漂洗2遍，沥干后用纸吸去水分，加盐1g、白胡椒粉、黄酒1勺腌5分钟。','【拍粉】银鱼拌入淀粉3勺，轻轻抖散使每条鱼裹上薄粉。','【初炸】油烧至六成热（170℃），分批下银鱼炸2分钟至微黄定型，捞出。','【复炸】油温升至八成热，倒回银鱼复炸1分钟至金黄酥脆，捞出控油。','【炒香】锅留底油，下蒜末和青红椒粒小火爆香，倒入银鱼，撒盐1g颠锅翻匀出锅。'],tip:'银鱼娇嫩，翻动要轻。复炸让外壳更酥，放凉也不回软，当零食都行。'},
+{id:31,name:'豆豉蒸鱼',emoji:'🐟',cat:'海鲜河鲜',desc:'豆豉咸香渗入鱼肉，广式茶餐厅风味',time:'20分钟',diff:'简单',ing:[['鲈鱼(或鳊鱼)','1条约500g','海鲜'],['永川豆豉','2勺','调料'],['大蒜','4瓣','蔬菜'],['生姜','1块','蔬菜'],['小米椒','2根','蔬菜'],['生抽','1勺','调料'],['白糖','半勺','调料'],['绍兴黄酒','2勺','调料'],['小葱','2根','蔬菜']],steps:['【处理】鱼洗净两面划刀，抹黄酒2勺、盐1g、姜片腌10分钟。','【炒豉】豆豉略剁碎，锅中油1勺小火炒香豆豉和蒜末1分钟，加白糖半勺、生抽1勺炒匀关火。','【铺料】鱼装盘，炒好的豆豉蒜蓉均匀铺在鱼身上。','【蒸制】水开上汽后大火蒸9分钟，关火虚蒸2分钟。','【出锅】倒掉多余汤汁，铺小米椒圈和葱丝，淋1勺热油激香。'],tip:'豆豉很咸，铺料时别再加盐。炒过的豆豉比生豆豉香气浓一倍。'},
+{id:32,name:'红烧望潮(浙江小章鱼)',emoji:'🐙',cat:'海鲜河鲜',desc:'宁波舟山特色，望潮脆嫩，酱色红亮鲜香入味',time:'25分钟',diff:'中等',ing:[['望潮(小章鱼)','500g','海鲜'],['生姜','4片','蔬菜'],['大蒜','4瓣','蔬菜'],['小葱','3根','蔬菜'],['生抽','2勺','调料'],['老抽','半勺','调料'],['绍兴黄酒','3勺','调料'],['白糖','1勺','调料']],steps:['【清洗】望潮加盐1勺揉搓2分钟去黏液，冲洗干净，摘去内脏和眼睛嘴牙，大的对半切。','【焯水】水烧开加姜片黄酒1勺，下望潮焯30秒至触须微卷立刻捞出（焯久会老）。','【爆香】锅中油2勺，下姜片蒜瓣葱白段爆香。','【红烧】下望潮大火翻炒1分钟，淋黄酒2勺、生抽2勺、老抽半勺、白糖1勺，加小半碗热水，中火烧4分钟。','【收汁】大火收汁至浓稠红亮裹住望潮，撒葱段翻匀出锅。'],tip:'望潮肉嫩，全程加热时间控制在5分钟内才脆嫩弹牙。买不到望潮可用小八爪鱼代替。'},
+{id:33,name:'醉鸡(绍兴)',emoji:'🍗',cat:'荤菜',desc:'绍兴名菜，酒香沁骨，皮爽肉滑冷吃最妙',time:'50分钟+冷藏4小时',diff:'中等',ing:[['三黄鸡','半只约600g','肉类'],['绍兴黄酒','300ml','调料'],['糟卤','100ml','调料'],['生姜','4片','蔬菜'],['小葱','3根','蔬菜'],['花椒','1小撮','调料'],['盐','15g','调料'],['白糖','1勺','调料']],steps:['【煮鸡】鸡半只冷水下锅，加姜片、葱结、花椒、盐10g，水开后转小火保持微沸浸煮18分钟，关火加盖焖10分钟（浸熟才嫩）。','【冰镇】捞出立刻投入冰水浸15分钟至彻底凉透，皮才会爽脆。','【调醉卤】黄酒300ml+糟卤100ml+煮鸡原汤100ml+盐5g+白糖1勺调匀，彻底放凉。','【斩件】鸡斩成大块，皮朝下码入密封盒。','【醉制】倒入醉卤完全没过鸡块，冷藏浸泡4小时以上（隔夜更入味）。','【上桌】取出斩件装盘，淋少许醉卤即可。'],tip:'醉卤必须凉透再倒，热卤会把鸡烫熟变柴。黄酒选绍兴加饭酒，香气最正。'},
+{id:34,name:'绍兴酱鸭',emoji:'🦆',cat:'荤菜',desc:'腊香酱浓，越嚼越香，绍兴人年夜饭常客',time:'90分钟',diff:'较难',ing:[['麻鸭','半只约800g','肉类'],['生抽','4勺','调料'],['老抽','2勺','调料'],['绍兴黄酒','4勺','调料'],['白糖','2勺','调料'],['甜面酱','2勺','调料'],['八角','2颗','调料'],['桂皮','1小段','调料'],['生姜','4片','蔬菜'],['小葱','3根','蔬菜']],steps:['【腌鸭】鸭肉洗净擦干，用盐5g+黄酒2勺内外抹匀，冷藏腌4小时。','【调酱】生抽4勺+老抽2勺+甜面酱2勺+白糖2勺+黄酒2勺+八角桂皮调成酱卤。','【烧制】鸭肉冷水下锅焯2分钟去血沫，捞出冲净；换锅放入鸭肉，倒入酱卤和清水没过鸭身一半，加姜葱，大火烧开转小火烧40分钟，中途翻面2次。','【收汁】转大火收汁，用勺不断舀汁淋在鸭身上，至酱汁浓稠发亮挂住鸭皮。','【晾切】酱鸭晾至微凉（热切会散），斩件装盘，浇剩余酱汁。'],tip:'收汁时糖分高容易糊，要不停淋汁别离开人。晾到温热再斩，皮肉完整漂亮。'},
+{id:35,name:'可乐鸡翅',emoji:'🍗',cat:'荤菜',desc:'零失败国民菜，甜咸焦香，孩子点名率第一',time:'25分钟',diff:'简单',ing:[['鸡中翅','10个约500g','肉类'],['可乐','1罐330ml','调料'],['生姜','3片','蔬菜'],['生抽','2勺','调料'],['老抽','1勺','调料'],['绍兴黄酒','1勺','调料'],['小葱','1根','蔬菜'],['熟白芝麻','少许','干货']],steps:['【处理】鸡翅两面各划一刀，冷水下锅加姜片黄酒1勺，水开撇沫煮2分钟，捞出温水冲净擦干。','【煎翅】平底锅少油，鸡翅皮面朝下中小火煎3分钟至金黄，翻面再煎2分钟。','【焖烧】倒入可乐没过鸡翅，加生抽2勺、老抽1勺、姜片，大火烧开转中火焖12分钟。','【收汁】转大火收汁，不停翻动防止焦底，至汤汁浓稠如蜜裹满鸡翅。','【装盘】撒白芝麻和葱花出锅。'],tip:'用普通可乐别用无糖款（代糖加热发苦）。收汁最后2分钟必须盯着翻动，糖汁极易糊锅。'},
+{id:36,name:'白切鸡',emoji:'🐔',cat:'荤菜',desc:'皮黄肉白骨带红，蘸姜葱蓉吃本味，粤式经典',time:'50分钟',diff:'中等',ing:[['三黄鸡','1只约1.2kg','肉类'],['生姜','1大块','蔬菜'],['小葱','6根','蔬菜'],['沙姜','1块(可选)','蔬菜'],['盐','20g','调料'],['花生油','4勺','调料'],['绍兴黄酒','2勺','调料']],steps:['【三提三放】大锅水加姜葱黄酒烧至微沸（虾眼水，约90℃），提鸡头将鸡身浸入水中5秒提起，重复3次（让腹腔内外温度一致）。','【浸煮】整鸡放入水中，保持水微沸不能翻滚，浸煮20分钟，关火加盖焖15分钟。','【冰镇】捞出立刻投入冰水浸10分钟至凉透，皮收缩变爽脆黄亮。','【姜葱蓉】姜剁成茸、葱白切末，加盐5g，淋入烧至冒烟的热油4勺激香拌匀。','【斩件】鸡沥干斩件装盘，配姜葱蓉上桌。'],tip:'检验熟度：筷子插鸡腿最厚处，流出清澈汁水即熟，带血水再焖5分钟。全程水面只能冒小泡不能滚开。'},
+{id:37,name:'番茄炒蛋',emoji:'🍅',cat:'荤菜',desc:'国民第一菜，酸甜多汁，拌饭拌面都无敌',time:'10分钟',diff:'简单',ing:[['番茄','3个约400g','蔬菜'],['鸡蛋','4个','蛋奶'],['小葱','2根','蔬菜'],['白糖','1勺','调料'],['盐','3g','调料'],['番茄酱','1勺(可选)','调料'],['食用油','3勺','调料']],steps:['【备料】番茄去皮切滚刀块；鸡蛋加盐1g打散至挑起无蛋清丝。','【炒蛋】热锅多油（2勺）烧至六成热，倒入蛋液，膨起后快速划散至刚凝固，盛出。','【炒番茄】补油1勺，下番茄块中火炒3分钟至出汁软塌，加番茄酱1勺、白糖1勺、盐2g炒匀出沙。','【合炒】倒回鸡蛋轻翻几下让蛋块吸满茄汁，30秒即关火。','【出锅】撒葱花装盘。'],tip:'鸡蛋要「嫩」：刚凝固就起锅，回锅只是裹汁。番茄先炒出沙，汤汁才浓能挂住蛋。'},
+{id:38,name:'宫保鸡丁',emoji:'🥜',cat:'荤菜',desc:'糊辣荔枝口，鸡丁滑嫩花生脆，川菜经典',time:'20分钟',diff:'中等',ing:[['鸡腿肉','350g','肉类'],['油酥花生米','80g','干货'],['大葱','1根','蔬菜'],['干辣椒','8个','调料'],['花椒','1小撮','调料'],['生姜','3片','蔬菜'],['大蒜','3瓣','蔬菜'],['生抽','2勺','调料'],['香醋','2勺','调料'],['白糖','2勺','调料'],['淀粉','2勺','调料'],['绍兴黄酒','1勺','调料']],steps:['【腌肉】鸡腿肉去骨切1.5cm丁，加盐1g、黄酒1勺、生抽半勺、淀粉1勺抓匀腌15分钟。','【碗汁】生抽1.5勺+香醋2勺+白糖2勺+淀粉1勺+水2勺调成荔枝味碗汁（酸甜为主微咸）。','【滑鸡丁】锅热油3勺烧至五成热，下鸡丁滑炒1-2分钟至变白，盛出。','【炝锅】留底油小火下花椒、干辣椒段炒至棕红出糊辣香（别炒黑），下姜蒜片和葱段爆香。','【合炒】倒回鸡丁转大火，淋入碗汁快速翻炒30秒至汁浓裹匀，关火倒入花生米拌匀出锅。'],tip:'花生米最后关火才放，保持酥脆。干辣椒炒到棕红「糊辣香」是灵魂，变黑发苦要重来。'},
+{id:39,name:'红烧鸡翅',emoji:'🍗',cat:'荤菜',desc:'酱色红亮，咸甜入味，比可乐鸡翅更醇厚',time:'30分钟',diff:'简单',ing:[['鸡中翅','10个约500g','肉类'],['生姜','4片','蔬菜'],['大蒜','4瓣','蔬菜'],['八角','1颗','调料'],['生抽','3勺','调料'],['老抽','1勺','调料'],['绍兴黄酒','2勺','调料'],['白糖','1勺','调料'],['冰糖','5粒','调料'],['小葱','2根','蔬菜']],steps:['【处理】鸡翅两面划刀，冷水下锅加姜片黄酒1勺焯水，开锅撇沫煮2分钟捞出冲净擦干。','【煎制】平底锅少油，鸡翅中火煎至两面金黄（约4分钟），逼出多余油脂。','【炒糖色】锅留底油，下冰糖5粒小火炒至融化冒琥珀色小泡（别炒黑）。','【烧制】倒入鸡翅裹上糖色，下姜蒜八角爆香，淋黄酒2勺、生抽3勺、老抽1勺，加热水没过鸡翅一半，大火烧开转中小火烧12分钟。','【收汁】大火收汁至浓稠发亮，撒葱段翻匀出锅。'],tip:'不会炒糖色可省略，直接用老抽上色加冰糖调味。收汁时糖分高，最后要不停翻动。'}
+,
+{id:40,name:'土豆炖鸡腿',emoji:'🥔',cat:'荤菜',desc:'鸡腿软烂土豆粉糯，汤汁拌饭一绝的懒人硬菜',time:'45分钟',diff:'简单',ing:[['琵琶腿','4个约600g','肉类'],['土豆','2个约400g','蔬菜'],['胡萝卜','1根','蔬菜'],['生姜','4片','蔬菜'],['大蒜','4瓣','蔬菜'],['八角','1颗','调料'],['生抽','3勺','调料'],['老抽','1勺','调料'],['绍兴黄酒','2勺','调料'],['冰糖','6粒','调料'],['小葱','2根','蔬菜']],steps:['【处理】鸡腿剁成大块，冷水下锅加姜片黄酒1勺，水开撇沫煮3分钟，捞出冲净。','【煎鸡】锅中少油，鸡块皮面朝下中火煎3分钟至微黄出油。','【调味】下姜蒜八角爆香，加冰糖6粒、生抽3勺、老抽1勺炒至上色。','【炖煮】倒入热水没过鸡块，大火烧开转小火炖20分钟。','【下配菜】土豆胡萝卜切滚刀块下锅，继续炖15分钟至土豆粉糯（筷子轻松插入）。','【收汁】大火收汁至汤汁浓稠，撒葱段出锅。'],tip:'土豆后放，与鸡同炖太久会化掉。汤汁别收太干，留一些拌饭特别香。'},
+{id:41,name:'咖喱鸡肉饭',emoji:'🍛',cat:'荤菜',desc:'一锅出的快手晚餐，咖喱浓香，孩子光盘神器',time:'30分钟',diff:'简单',ing:[['鸡腿肉','300g','肉类'],['土豆','1个','蔬菜'],['胡萝卜','半根','蔬菜'],['洋葱','半个','蔬菜'],['咖喱块','3块约60g','调料'],['牛奶','50ml','蛋奶'],['大米','2人份','主食'],['食用油','1勺','调料']],steps:['【煮饭】大米正常煮饭（水量比平时少一点点，配咖喱正好）。','【备料】鸡腿肉切2cm块，土豆胡萝卜洋葱切滚刀块。','【炒香】锅中油1勺，下洋葱中火炒2分钟至透明出甜味，下鸡块炒至表面变白。','【炖煮】下土豆胡萝卜翻炒1分钟，加水没过食材，大火烧开转中火煮10分钟至土豆变软。','【化咖喱】关小火，放入咖喱块搅拌至完全融化，再开小火煮3分钟至浓稠（咖喱块下锅后必须小火并不停搅拌防糊底）。','【点睛】淋牛奶50ml搅匀，浇在热米饭上。'],tip:'咖喱块本身够味，不用再加盐。加一勺牛奶或椰浆口感更顺滑高级。'},
+{id:42,name:'糖醋排骨',emoji:'🍖',cat:'荤菜',desc:'万能12345糖醋汁，外酥里嫩酸甜挂汁',time:'40分钟',diff:'中等',ing:[['猪肋排','600g','肉类'],['生姜','4片','蔬菜'],['小葱','2根','蔬菜'],['熟白芝麻','1勺','干货'],['料酒','1勺','调料'],['生抽','2勺','调料'],['香醋','3勺','调料'],['白糖','4勺','调料'],['绍兴黄酒','1勺','调料'],['淀粉','1勺','调料']],steps:['【焯水】肋排剁4cm段，冷水下锅加姜片黄酒，水开撇沫煮3分钟，捞出温水冲净沥干。','【煎排骨】锅中油2勺，下排骨中火煎至两面金黄微焦（约5分钟），逼出油脂。','【调味】加生抽2勺、白糖3勺、香醋2勺（留1勺醋出锅前放），翻炒上色。','【焖煮】加开水没过排骨，大火烧开转小火焖25分钟至筷子能轻松插入。','【收汁】转大火收汁，汁变浓时沿锅边淋入剩下的1勺香醋（后放醋才有酸香），收至酱汁红亮挂住排骨。','【装盘】撒白芝麻和葱花出锅。'],tip:'口诀「1酒2酱3醋4糖5水」。醋分两次放：焖煮时放柔和酸味，出锅前放挥发性酸香。'},
+{id:43,name:'青椒肉丝',emoji:'🫑',cat:'荤菜',desc:'家常快手下饭菜，肉丝滑嫩青椒清香',time:'15分钟',diff:'简单',ing:[['猪里脊','250g','肉类'],['青椒','3个约200g','蔬菜'],['生姜','2片','蔬菜'],['大蒜','2瓣','蔬菜'],['生抽','2勺','调料'],['老抽','几滴','调料'],['淀粉','1勺','调料'],['白糖','半勺','调料'],['绍兴黄酒','1勺','调料']],steps:['【切丝】里脊逆纹切细丝，加盐1g、黄酒1勺、生抽半勺、淀粉1勺、几滴油抓匀腌10分钟（加油封住水分）。','【备菜】青椒去籽切丝，姜蒜切末。','【滑肉】热锅冷油（油稍多），下肉丝大火快速划散，炒至变白约1分钟盛出。','【炒青椒】余油下姜蒜末爆香，下青椒丝大火炒1分钟至断生微起虎皮。','【合炒】倒回肉丝，加生抽1.5勺、白糖半勺、盐少许，大火翻炒30秒出锅。'],tip:'肉丝要逆纹切（切断纤维）才嫩。全程大火快炒，青椒炒久会出水变黄。'},
+{id:44,name:'鱼香肉丝',emoji:'🥕',cat:'荤菜',desc:'没有鱼却有鱼香，咸甜酸辣兼备的经典川菜',time:'25分钟',diff:'中等',ing:[['猪里脊','250g','肉类'],['木耳','10朵','干货'],['胡萝卜','半根','蔬菜'],['青椒','1个','蔬菜'],['郫县豆瓣酱','1.5勺','调料'],['生姜','1块','蔬菜'],['大蒜','4瓣','蔬菜'],['小葱','3根','蔬菜'],['生抽','1勺','调料'],['香醋','2勺','调料'],['白糖','2勺','调料'],['淀粉','2勺','调料'],['绍兴黄酒','1勺','调料']],steps:['【腌肉】里脊切丝，加盐1g、黄酒1勺、淀粉1勺抓匀腌10分钟。','【碗汁】生抽1勺+香醋2勺+白糖2勺+淀粉1勺+水3勺调成鱼香汁（糖醋为主，咸辣次之）。','【备菜】木耳泡发切丝，胡萝卜青椒切丝，姜蒜切末，葱切葱花。','【滑肉】热锅宽油五成热下肉丝划散，变白盛出。','【炒香】留底油，下豆瓣酱1.5勺小火炒出红油，下姜蒜末炒香，再下木耳丝胡萝卜丝青椒丝大火炒1分钟。','【合炒】倒回肉丝，淋入碗汁（先搅匀防淀粉沉底），大火翻炒30秒至汁浓裹匀，撒葱花出锅。'],tip:'鱼香=泡椒姜蒜葱+糖醋酱油的比例艺术。豆瓣酱很咸，碗汁里别再放盐。'},
+{id:45,name:'红烧牛腩',emoji:'🥩',cat:'荤菜',desc:'牛腩软烂入味，酱香浓郁，汤汁拌饭一绝',time:'2小时(高压锅50分钟)',diff:'中等',ing:[['牛腩','800g','肉类'],['白萝卜','1根约500g','蔬菜'],['生姜','6片','蔬菜'],['大蒜','6瓣','蔬菜'],['大葱','1根','蔬菜'],['八角','2颗','调料'],['桂皮','1小段','调料'],['香叶','3片','调料'],['干辣椒','3个','调料'],['郫县豆瓣酱','2勺','调料'],['生抽','3勺','调料'],['老抽','1勺','调料'],['冰糖','20g','调料'],['绍兴黄酒','4勺','调料'],['盐','适量','调料']],steps:['【焯水】牛腩切3cm方块冷水下锅，加姜片3片、黄酒2勺，大火烧开撇净浮沫煮5分钟，捞出温水冲净沥干（一定要温水冲，冷水会让肉收缩变柴）。','【炒糖色】锅中放少许油+冰糖20g，最小火慢慢搅拌至糖融化变琥珀色冒小泡（约3分钟，颜色一变立即进行下一步，多1秒就发苦）。','【煸牛腩】倒入牛腩中火翻炒3分钟至每块均匀裹上糖色，边缘微焦。','【炒香料】下豆瓣酱2勺小火炒1分钟出红油，加姜蒜、八角、桂皮、香叶、干辣椒、葱段炒出香味。','【调味炖煮】淋黄酒2勺、生抽3勺、老抽1勺翻炒上色，倒入开水没过牛腩3cm（一定要开水！），大火烧开转最小火加盖炖90分钟（高压锅上汽后35分钟）。','【下萝卜】白萝卜去皮切滚刀块下锅，加盐调味，继续炖20分钟至萝卜透明软糯。','【收汁】大火收汁5-8分钟至浓稠挂在肉上，撒葱花出锅。'],tip:'牛腩要选带筋带肥的「坑腩」或「崩沙腩」，纯瘦的会柴。中途加水必须加开水，冷水会让蛋白质凝固变硬。用砂锅或铸铁锅炖更香。'},
+{id:46,name:'无锡酱排骨(江浙)',emoji:'🍖',cat:'荤菜',desc:'江浙名菜，浓油赤酱，甜中带咸，骨肉酥烂',time:'60分钟',diff:'中等',ing:[['猪肋排','800g','肉类'],['生姜','5片','蔬菜'],['大葱','1根','蔬菜'],['八角','2颗','调料'],['桂皮','1小段','调料'],['冰糖','40g','调料'],['红糖','20g','调料'],['生抽','3勺','调料'],['老抽','2勺','调料'],['绍兴黄酒','4勺','调料'],['香醋','1勺','调料'],['熟白芝麻','1勺','干货']],steps:['【焯水】肋排剁5cm段冷水下锅，加姜片2片、黄酒1勺，大火烧开撇沫煮3分钟，捞出温水冲净。','【炒糖色】锅中放少许油+冰糖40g+红糖20g，小火慢炒至糖完全融化冒琥珀色密集小泡（约4分钟，红糖让颜色更深更亮）。','【上色】倒入排骨中火翻炒3分钟，让每块排骨均匀裹上糖色变红亮。','【调味】下姜葱、八角、桂皮炒香，淋黄酒3勺、生抽3勺、老抽2勺翻炒出酱香。','【焖煮】加开水没过排骨2cm，大火烧开转小火加盖焖45分钟（用砂锅更好，中途翻动1-2次）。','【收汁】开盖转大火收汁，不停用勺舀汁淋排骨，至酱汁浓稠发亮能挂住排骨（约8-10分钟）。','【点睛】沿锅边淋入香醋1勺激出香气（不吃出酸味，只提鲜亮色），撒白芝麻出锅。'],tip:'无锡酱排骨的精髓是「甜出头咸收口」，糖量不能减。用冰糖+红糖组合：冰糖亮泽红糖色深。收汁时糖分高极易糊锅，最后5分钟必须盯着不停翻动。'},
+{id:131,name:'土豆烧牛肉',emoji:'🥔',cat:'荤菜',desc:'牛肉酥烂土豆粉糯，家常炖菜之王',time:'90分钟(高压锅40分钟)',diff:'简单',ing:[['牛腩或牛腱','600g','肉类'],['土豆','3个约500g','蔬菜'],['胡萝卜','1根','蔬菜'],['洋葱','半个','蔬菜'],['生姜','5片','蔬菜'],['大蒜','5瓣','蔬菜'],['八角','2颗','调料'],['桂皮','1小段','调料'],['香叶','2片','调料'],['番茄酱','2勺','调料'],['生抽','3勺','调料'],['老抽','1勺','调料'],['冰糖','15g','调料'],['绍兴黄酒','3勺','调料'],['盐','适量','调料']],steps:['【焯水】牛肉切3cm块冷水下锅，加姜片2片、黄酒1勺，水开撇沫煮5分钟，捞出温水冲净。','【煸香】锅中放2勺油，下洋葱丁中火炒3分钟至透明出甜味，加姜蒜、八角、桂皮、香叶炒香。','【炒牛肉】下牛肉块中火翻炒3分钟至表面微焦，加番茄酱2勺炒1分钟出红油（番茄酱让汤色红亮味道更醇厚）。','【调味】淋黄酒2勺、生抽3勺、老抽1勺、冰糖15g翻炒均匀上色。','【炖煮】加开水没过牛肉3cm，大火烧开转最小火加盖炖60分钟（高压锅上汽后25分钟）至筷子能轻松插入。','【下土豆胡萝卜】土豆胡萝卜去皮切滚刀块下锅，加盐调味，继续炖20分钟至土豆粉糯（筷子轻插即穿）。','【收汁】开盖大火收汁3-5分钟至汤汁浓稠（不用收太干，留些拌饭特别香）。'],tip:'土豆不能早放，炖太久会化成糊。选粉质土豆（黄心）比脆质土豆（白心）更适合炖。番茄酱是这道菜的隐形功臣，去腥提鲜还上色。'},
+{id:132,name:'黑椒牛柳',emoji:'🥩',cat:'荤菜',desc:'牛柳嫩滑黑椒香浓，餐厅级快手菜',time:'20分钟',diff:'中等',ing:[['牛里脊','350g','肉类'],['洋葱','1个','蔬菜'],['青椒','1个','蔬菜'],['红椒','半个','蔬菜'],['大蒜','3瓣','蔬菜'],['黑胡椒碎','2勺','调料'],['蚝油','2勺','调料'],['生抽','1勺','调料'],['老抽','半勺','调料'],['白糖','1勺','调料'],['淀粉','2勺','调料'],['小苏打','1g','调料'],['绍兴黄酒','1勺','调料'],['黄油','10g','蛋奶']],steps:['【腌肉】牛里脊逆纹切5mm厚片再切粗条，加盐1g、黄酒1勺、生抽半勺、淀粉1勺、小苏打1g、清水2勺抓匀（打水让肉吸饱水分），最后拌1勺油锁水，腌30分钟。','【调黑椒汁】黑胡椒碎2勺+蚝油2勺+生抽1勺+老抽半勺+白糖1勺+清水4勺+淀粉半勺调匀备用。','【备菜】洋葱切丝，青红椒切条，蒜切片。','【滑牛柳】锅烧至冒烟下3勺油，油温五成热时放牛柳，大火快速滑散40秒至7分熟（表面刚变色）立即盛出（余温会继续加热）。','【炒配菜】锅中留底油下黄油融化，爆香蒜片和洋葱丝炒2分钟至软，加青红椒炒1分钟。','【合炒收汁】倒回牛柳，淋入调好的黑椒汁（先搅匀），大火翻炒30秒至汁浓稠裹匀立即出锅。'],tip:'牛肉嫩的三重保险：逆纹切+小苏打+打水腌制。全程大火快炒，牛柳在锅里累计时间不超过2分钟。黑胡椒碎现磨的比胡椒粉香10倍。'},
+{id:133,name:'红烧猪蹄',emoji:'🐖',cat:'荤菜',desc:'胶原满满，皮糯肉烂，酱香浓郁',time:'2.5小时(高压锅50分钟)',diff:'中等',ing:[['猪蹄','2只约1.2kg(剁块)','肉类'],['生姜','8片','蔬菜'],['大蒜','8瓣','蔬菜'],['大葱','2根','蔬菜'],['八角','3颗','调料'],['桂皮','1小段','调料'],['香叶','3片','调料'],['干山楂','5片','调料'],['冰糖','30g','调料'],['生抽','4勺','调料'],['老抽','2勺','调料'],['绍兴黄酒','6勺','调料'],['盐','适量','调料']],steps:['【处理猪蹄】猪蹄让卖家剁成小块，回家检查是否有残留猪毛（用镊子拔干净），冷水浸泡30分钟出血水。','【焯水】冷水下锅加姜片3片、黄酒2勺，大火烧开撇净浮沫煮8分钟（猪蹄腥臊味重，焯水时间要够），捞出温水冲净。','【炒糖色】锅中放少许油+冰糖30g，小火炒至琥珀色冒密集小泡（约3分钟）。','【上色】倒入猪蹄中火翻炒5分钟至每块均匀裹上糖色变红亮，边缘微焦。','【炒香料】下姜蒜、八角、桂皮、香叶、干山楂、葱段炒出香味，淋黄酒4勺、生抽4勺、老抽2勺翻炒均匀。','【炖煮】倒入开水没过猪蹄3cm（一定要开水），大火烧开转最小火加盖炖2小时（高压锅上汽后40分钟）至筷子能轻松插入猪皮。','【收汁】开盖挑出香料不要，加盐调味，转大火收汁10-15分钟至酱汁浓稠发亮挂住猪蹄（要不停翻动防糊底）。'],tip:'干山楂是猪蹄软烂的秘密（山楂酸能分解胶原蛋白），没有可用2勺白醋代替。猪蹄一定要炖够时间，判断标准：筷子插猪皮能轻松穿透、猪皮微微透明。收汁阶段糖分高极易糊锅，人不能离开。'},
+{id:134,name:'黄豆焖猪蹄',emoji:'🍲',cat:'荤菜',desc:'黄豆吸饱肉汁，猪蹄糯香，江南家常滋补菜',time:'2.5小时(高压锅50分钟)',diff:'中等',ing:[['猪蹄','1只约700g(剁块)','肉类'],['黄豆','150g','干货'],['生姜','6片','蔬菜'],['大葱','1根','蔬菜'],['八角','2颗','调料'],['桂皮','1小段','调料'],['香叶','2片','调料'],['冰糖','20g','调料'],['生抽','3勺','调料'],['老抽','1勺','调料'],['绍兴黄酒','4勺','调料'],['盐','适量','调料']],steps:['【泡黄豆】黄豆提前冷水浸泡6小时以上（或隔夜），泡至豆粒饱满膨胀（约为干豆的2.5倍大），挑出坏豆冲洗干净。','【焯猪蹄】猪蹄冷水下锅加姜片2片、黄酒1勺，大火烧开撇沫煮5分钟，捞出温水冲净。','【炒糖色】锅中少许油+冰糖20g小火炒至琥珀色冒小泡。','【上色】下猪蹄翻炒3分钟裹匀糖色，加姜葱、八角、桂皮、香叶炒香，淋黄酒3勺、生抽3勺、老抽1勺翻炒出酱香。','【炖煮】倒入开水没过猪蹄2cm，大火烧开转小火加盖炖60分钟（高压锅上汽后25分钟）。','【下黄豆】倒入泡好的黄豆翻匀，继续炖40分钟至黄豆酥软、猪蹄皮糯（高压锅再压15分钟）。','【收汁】加盐调味，大火收汁8-10分钟至汤汁浓稠挂在食材上（黄豆会吸汁，别收太干）。'],tip:'黄豆一定要提前泡透，未泡的黄豆炖再久也发硬。用砂锅或铸铁锅焖更入味。这道菜隔夜再加热更好吃，黄豆吸饱肉汁。'},
+{id:135,name:'话梅排骨(江浙)',emoji:'🍑',cat:'荤菜',desc:'江浙特色，话梅果香解腻，酸甜回甘',time:'45分钟',diff:'简单',ing:[['猪肋排','600g','肉类'],['话梅','8颗(约30g)','干货'],['生姜','4片','蔬菜'],['大蒜','4瓣','蔬菜'],['冰糖','25g','调料'],['生抽','2勺','调料'],['老抽','半勺','调料'],['绍兴黄酒','2勺','调料'],['香醋','1勺','调料'],['熟白芝麻','1勺','干货'],['小葱','2根','蔬菜']],steps:['【泡话梅】话梅8颗放入小碗，加温水150ml浸泡20分钟（泡出的话梅水是灵魂，别倒！），话梅捞出备用。','【焯水】肋排剁4cm段冷水下锅，加姜片2片、黄酒1勺，水开撇沫煮3分钟，捞出温水冲净沥干。','【煎排骨】锅中放1勺油，下排骨中火煎至两面金黄微焦（约5分钟），逼出多余油脂。','【炒糖色】排骨推至锅边，锅中放冰糖25g小火炒至融化变琥珀色，与排骨翻炒均匀裹上糖色。','【调味】下姜蒜爆香，淋黄酒1勺、生抽2勺、老抽半勺翻炒出酱香。','【焖煮】倒入泡话梅的水+话梅本身，再加开水至没过排骨，大火烧开转小火加盖焖25分钟。','【收汁】开盖加香醋1勺，转大火收汁5-8分钟至浓稠发亮，撒白芝麻和葱花出锅。'],tip:'话梅要选咸甜口味的（不是纯甜的蜜饯），九制话梅最佳。话梅的天然果酸能让肉质更嫩、解油腻、增回甘。没有话梅可用2颗山楂+1勺柠檬汁代替。'},
+{id:47,name:'板栗烧鸡',emoji:'🌰',cat:'荤菜',desc:'秋季时令，板栗粉糯香甜，鸡肉酱香入味',time:'45分钟',diff:'简单',ing:[['鸡腿肉','500g','肉类'],['板栗仁','300g','干货'],['生姜','4片','蔬菜'],['大蒜','4瓣','蔬菜'],['生抽','3勺','调料'],['老抽','1勺','调料'],['冰糖','8粒','调料'],['绍兴黄酒','2勺','调料'],['小葱','2根','蔬菜']],steps:['【处理】鸡腿剁块焯水2分钟冲净；生板栗仁温水泡10分钟去内皮（买现成板栗仁更省事）。','【煎鸡】锅中少油，鸡块皮朝下中火煎3分钟至微黄出油。','【炒糖色】鸡推锅边，下冰糖小火炒化至琥珀色，与鸡块翻匀上色。','【烧制】下姜蒜爆香，淋黄酒2勺、生抽3勺、老抽1勺，加开水没过鸡肉，大火烧开转小火烧15分钟。','【下板栗】加入板栗仁继续烧15分钟至板栗粉糯（筷子能轻松扎透）。','【收汁】大火收汁至浓稠挂汁，撒葱段出锅。'],tip:'板栗后放，同烧太久会碎成糊。糖色炒到冒琥珀小泡立刻下鸡块，晚3秒就发苦。'},
+{id:48,name:'毛豆烧鸡',emoji:'🫛',cat:'荤菜',desc:'江南夏秋家常味，毛豆清香鸡肉鲜嫩',time:'35分钟',diff:'简单',ing:[['鸡腿肉','450g','肉类'],['毛豆仁','250g','蔬菜'],['生姜','3片','蔬菜'],['生抽','2勺','调料'],['老抽','半勺','调料'],['白糖','1勺','调料'],['绍兴黄酒','2勺','调料'],['小葱','2根','蔬菜']],steps:['【处理】鸡腿剁3cm块，冷水下锅加姜片黄酒1勺焯水2分钟，捞出冲净。','【煸鸡】锅中少油，下鸡块中火煸炒3分钟至表面微黄出香。','【调味】淋黄酒1勺、生抽2勺、老抽半勺、白糖1勺翻炒上色。','【烧制】加开水至没过鸡块大半，大火烧开转小火烧12分钟。','【下毛豆】倒入毛豆仁翻匀，继续烧8-10分钟至毛豆酥软入味。','【收汁】大火收汁至汤汁浓稠包裹食材，撒葱花出锅。'],tip:'毛豆要烧到「酥」才好吃，尝一颗粉糯即可。带壳毛豆剪两头更入味，毛豆仁则更方便。'},
+{id:49,name:'笋干老鸭煲(浙江)',emoji:'🦆',cat:'荤菜',desc:'浙江名煲，笋干吸油提鲜，鸭汤金黄澄澈滋补不上火',time:'2.5小时',diff:'简单',ing:[['老鸭','半只约900g','肉类'],['笋干','80g','干货'],['金华火腿片','50g(可选)','肉类'],['生姜','5片','蔬菜'],['绍兴黄酒','4勺','调料'],['盐','3g','调料'],['小葱','2根','蔬菜']],steps:['【泡笋】笋干温水泡3小时以上（中途换水2次去涩），泡软后撕成条，泡笋水沉淀备用。','【焯鸭】老鸭剁块，冷水下锅加姜片黄酒2勺，水开撇净浮沫煮5分钟，捞出温水冲净。','【入煲】砂锅中放入鸭块、笋干条、火腿片、姜片，倒入泡笋水和足量开水（一次加够，中途不加水），淋黄酒2勺。','【慢炖】大火烧开转最小火，加盖炖2小时（电炖锅选「煲汤」档2.5小时）。','【调味】出锅前10分钟加盐3g调味（火腿有咸味，盐要少放），撒葱结。'],tip:'老鸭要选2年以上的麻鸭，汤才香浓。全程小火「菊花心」微沸，汤色才会金黄清亮不浑浊。'},
+{id:50,name:'盐焗鸡',emoji:'🍗',cat:'荤菜',desc:'皮脆肉嫩骨都香，客家名菜家庭电饭煲版',time:'70分钟',diff:'中等',ing:[['三黄鸡','1只约1kg','肉类'],['盐焗鸡粉','1包20g','调料'],['生姜','1大块','蔬菜'],['小葱','5根','蔬菜'],['绍兴黄酒','2勺','调料'],['花生油','1勺','调料'],['粗海盐','2kg(可选)','调料']],steps:['【腌鸡】鸡洗净彻底擦干（里外都要干），盐焗鸡粉20g均匀抹遍鸡身内外并按摩5分钟，腹腔塞入姜片和葱结，冷藏腌4小时以上（隔夜最佳）。','【铺底】电饭煲内胆刷一层油，底部铺满姜片和小葱垫底（防粘并增香）。','【焗制】鸡胸朝下放入电饭煲，淋黄酒2勺，按「煮饭」键焗40分钟；跳闸后翻面再按一次焗20分钟。','【验熟】筷子插鸡腿最厚处流清汁即熟，带血水再焗10分钟。','【手撕】稍晾后手撕成块（手撕比刀切更入味），淋少许焗出的原汁。'],tip:'电饭煲版零失败。有烤箱可用粗盐炒热埋鸡，200℃焗50分钟更正宗。鸡一定要擦干，腌料才挂得住。'},
+{id:51,name:'糖醋里脊',emoji:'🍖',cat:'荤菜',desc:'外壳酥脆内里嫩滑，酸甜适口，宴客儿童双料冠军',time:'30分钟',diff:'中等',ing:[['猪里脊','350g','肉类'],['土豆淀粉','5勺','调料'],['番茄酱','4勺','调料'],['白糖','3勺','调料'],['香醋','2勺','调料'],['生抽','1勺','调料'],['淀粉','1勺','调料'],['鸡蛋','1个','蛋奶'],['熟白芝麻','1勺','干货'],['面粉','2勺','主食']],steps:['【腌肉】里脊切1cm粗条，加盐1g、白胡椒粉、黄酒1勺、半个蛋液抓匀腌15分钟。','【挂糊】土豆淀粉5勺+面粉2勺+水调成酸奶状脆皮糊（放2勺油更酥），肉条裹匀糊。','【初炸】油烧至六成热（170℃），逐条下锅防粘连，炸3分钟至定型微黄捞出。','【复炸】油温升至八成热（200℃），倒回里脊复炸1分钟至金黄酥脆。','【熬汁】锅留底油，下番茄酱4勺、白糖3勺、香醋2勺、生抽1勺、水3勺小火熬至冒大泡，淋水淀粉勾薄芡。','【裹汁】倒入炸好的里脊快速翻匀裹汁，撒白芝麻立即出锅。'],tip:'复炸是酥脆关键，裹汁动作要在20秒内完成，慢了就回软。土豆淀粉比玉米淀粉炸出来更脆。'},
+{id:52,name:'蜜汁叉烧',emoji:'🍯',cat:'荤菜',desc:'广式蜜汁叉烧家庭烤箱版，肥瘦相间甜香扑鼻',time:'6小时(含腌制)',diff:'中等',ing:[['梅头肉','600g','肉类'],['叉烧酱','4勺','调料'],['蜂蜜','3勺','调料'],['生抽','1勺','调料'],['绍兴黄酒','1勺','调料'],['南乳汁','1勺(可选)','调料'],['大蒜','3瓣','蔬菜'],['红曲粉','少许(可选)','调料']],steps:['【切肉】梅头肉洗净擦干，切成3cm厚长条，用叉子扎些小孔便于入味。','【腌制】叉烧酱4勺+生抽1勺+黄酒1勺+蜂蜜1勺+蒜末+南乳汁调匀，与肉条按摩拌匀，密封冷藏腌6小时以上（过夜最佳，中途翻面2次）。','【预热】烤箱200℃预热10分钟，烤盘铺锡纸架烤网，肉条摆上。','【初烤】200℃烤20分钟，取出翻面刷一层腌料汁。','【复烤】再烤15分钟，取出刷蜂蜜水（蜂蜜2勺+水1勺），升温220℃烤5分钟至边缘微焦上色。','【切片】出炉静置5分钟锁汁，斜切厚片装盘，淋剩余蜜汁。'],tip:'没有烤箱可用平底锅：小火加盖煎每面8分钟，最后刷蜜汁收亮。梅头肉(前肩肉)肥瘦相间，纯瘦的会柴。'}
+,
+{id:53,name:'红烧鸡腿',emoji:'🍗',cat:'荤菜',desc:'酱香浓郁皮糯肉嫩，一人一只的满足感',time:'35分钟',diff:'简单',ing:[['琵琶腿','4个约600g','肉类'],['生姜','4片','蔬菜'],['大蒜','4瓣','蔬菜'],['八角','1颗','调料'],['桂皮','1小段','调料'],['生抽','3勺','调料'],['老抽','1勺','调料'],['冰糖','8粒','调料'],['绍兴黄酒','2勺','调料'],['小葱','2根','蔬菜']],steps:['【处理】鸡腿冷水下锅加姜片黄酒1勺，水开撇沫煮3分钟，捞出冲净，表面划两刀便于入味。','【炒糖色】锅中少油下冰糖8粒，小火炒至融化冒琥珀色小泡。','【上色】下鸡腿快速翻动裹匀糖色，煎2分钟至表皮金黄。','【调味】下姜蒜八角桂皮爆香，淋黄酒2勺、生抽3勺、老抽1勺翻炒出酱香。','【烧制】加开水至没过鸡腿大半，大火烧开转小火加盖烧18分钟，中途翻面一次。','【收汁】大火收汁，边收边舀汁淋鸡腿，至酱汁浓稠红亮挂住，撒葱花出锅。'],tip:'鸡腿肉厚，划刀+小火慢烧才能入味到骨。收汁最后阶段糖分高，必须不停淋汁防糊。'},
+{id:54,name:'京酱肉丝',emoji:'🥬',cat:'荤菜',desc:'甜面酱炒肉丝，豆腐皮卷葱丝，老北京风味',time:'20分钟',diff:'简单',ing:[['猪里脊','250g','肉类'],['甜面酱','3勺','调料'],['豆腐皮','2张','豆制品'],['大葱','1根','蔬菜'],['生姜','2片','蔬菜'],['白糖','1勺','调料'],['生抽','1勺','调料'],['绍兴黄酒','1勺','调料'],['淀粉','1勺','调料'],['鸡蛋清','半个','蛋奶']],steps:['【腌肉】里脊切细丝，加盐1g、黄酒1勺、蛋清、淀粉1勺抓匀腌15分钟。','【备菜】大葱白切细丝铺盘底，豆腐皮切10cm方块焯水10秒捞出摆盘。','【调酱】甜面酱3勺+白糖1勺+生抽1勺+水2勺调匀（京酱偏甜，糖不能省）。','【滑肉】热锅宽油四成热下肉丝划散，炒至变白盛出控油。','【炒酱】锅留底油，小火倒入调好的酱汁炒1-2分钟至冒泡浓香。','【合炒】倒入肉丝翻炒均匀让每根肉丝裹满酱汁，铺在葱丝上，用豆腐皮卷着吃。'],tip:'酱要小火慢炒出香味，火大发苦。肉丝酱香葱丝辛辣豆腐皮清香，三样一起卷才是精髓。'},
+{id:55,name:'油焖春笋(浙江)',emoji:'🎋',cat:'素菜',desc:'春天的味道，浓油赤酱裹嫩笋，绍兴人开春必吃',time:'20分钟',diff:'简单',ing:[['春笋','500g','蔬菜'],['生抽','2勺','调料'],['老抽','半勺','调料'],['白糖','2勺','调料'],['绍兴黄酒','1勺','调料'],['小葱','2根','蔬菜'],['食用油','4勺','调料']],steps:['【处理】春笋剥壳削根，对半切后滚刀切成条，冷水下锅加少许盐焯3分钟去草酸涩味，捞出沥干。','【煸笋】锅中油4勺（油要多才叫油焖），下笋条中火煸炒4分钟至表面微黄起皱边。','【调味】淋黄酒1勺、生抽2勺、老抽半勺、白糖2勺，翻炒均匀上色。','【焖制】加小半碗热水，盖盖中小火焖5分钟让笋吸味。','【收汁】开盖大火收汁至浓稠发亮紧紧裹住笋条，撒葱花出锅。'],tip:'笋要选矮胖紧实、掐根部能出水的嫩笋。焯水去涩不能省，油多才香浓。'},
+{id:56,name:'蒜蓉西兰花',emoji:'🥦',cat:'素菜',desc:'翠绿爽脆蒜香浓，健康快手素菜之王',time:'10分钟',diff:'简单',ing:[['西兰花','1颗约400g','蔬菜'],['大蒜','5瓣','蔬菜'],['胡萝卜','几片','蔬菜'],['盐','2g','调料'],['蚝油','1勺','调料'],['淀粉','半勺','调料'],['食用油','2勺','调料']],steps:['【改刀】西兰花切成小朵，淡盐水浸泡10分钟逼出缝隙杂质，冲洗沥干。','【焯水】锅中水烧开加盐和几滴油，下西兰花和胡萝卜片焯1分钟至翠绿，捞出过凉水沥干（加盐加油保持翠绿）。','【爆蒜】锅中油2勺，下一半蒜末小火爆出香味。','【快炒】倒入西兰花转大火翻炒1分钟，加盐2g、蚝油1勺炒匀。','【出锅】撒另一半生蒜末翻两下立即出锅（生蒜补香是蒜蓉菜的灵魂）。'],tip:'焯水别超1分钟，否则软塌发黄。蒜分两次放：熟蒜出底香，生蒜提鲜香。'},
+{id:57,name:'酸辣土豆丝',emoji:'🥔',cat:'素菜',desc:'脆爽酸辣，考验刀工的国民素菜',time:'15分钟',diff:'简单',ing:[['土豆','2个约400g','蔬菜'],['干辣椒','5个','调料'],['花椒','1小撮','调料'],['大蒜','3瓣','蔬菜'],['香醋','2勺','调料'],['盐','2g','调料'],['白糖','半勺','调料'],['小葱','1根','蔬菜']],steps:['【切丝】土豆去皮切均匀细丝（约2mm），立刻泡入清水洗去表面淀粉，换水2次至水清（去淀粉才脆爽）。','【沥干】土豆丝捞出彻底沥干水分。','【炝锅】锅中油2勺烧热，下花椒小火炸香捞出，下干辣椒段和蒜片爆出香味（辣椒变棕不变黑）。','【爆炒】转最大火倒入土豆丝快速翻炒1.5分钟至微微透明断生。','【调味】沿锅边淋香醋1.5勺激出酸香，加盐2g、白糖半勺炒匀，出锅前沿锅边再淋半勺醋，撒葱段。'],tip:'醋分两次放：第一次烹入锅边挥发留香，第二次出锅前补酸味。全程大火，炒超3分钟就出水变软。'},
+{id:58,name:'地三鲜',emoji:'🍆',cat:'素菜',desc:'土豆茄子青椒三样素菜，炸出东北硬菜范',time:'30分钟',diff:'中等',ing:[['土豆','1个约250g','蔬菜'],['茄子','1根约300g','蔬菜'],['青椒','2个','蔬菜'],['大蒜','4瓣','蔬菜'],['生抽','2勺','调料'],['老抽','几滴','调料'],['蚝油','1勺','调料'],['白糖','1勺','调料'],['淀粉','2勺','调料'],['香醋','半勺','调料']],steps:['【备菜】土豆茄子切滚刀块，茄子拌1勺淀粉+少许盐腌5分钟（防吸油），青椒掰块，蒜切末。','【调汁】生抽2勺+蚝油1勺+白糖1勺+淀粉1勺+水4勺调匀。','【炸土豆】油六成热下土豆块炸4分钟至金黄硬壳，捞出。','【炸茄子】油温升至七成，下茄子炸2分钟至软身微黄，下青椒过油10秒，一起捞出控油。','【合烧】锅留底油爆香蒜末，倒入三样食材和调好的汁，中火翻炒1分钟至汁浓裹匀，点几滴香醋出锅。'],tip:'茄子拌干淀粉再炸能少吸一半油。嫌油炸麻烦可用少油半煎半炸，风味略减但更健康。'},
+{id:59,name:'手撕包菜',emoji:'🥬',cat:'素菜',desc:'镬气十足，脆嫩微辣带焦香，湘菜馆点单王',time:'10分钟',diff:'简单',ing:[['包菜','半颗约400g','蔬菜'],['五花肉片','50g(可选)','肉类'],['干辣椒','5个','调料'],['大蒜','4瓣','蔬菜'],['香醋','1勺','调料'],['生抽','2勺','调料'],['白糖','半勺','调料'],['盐','1g','调料']],steps:['【手撕】包菜洗净彻底甩干水分，手撕成大片，粗硬的梗片薄或不用（手撕断面不规则更易挂味）。','【煸肉】锅烧热下少许油，有五花肉片先煸出猪油（素菜荤油炒特别香）。','【炝锅】下蒜片干辣椒段小火爆香，辣椒呈棕红色。','【爆炒】转最大火倒入包菜，快速翻炒2分钟至叶片变软塌、边缘微焦起「镬气」。','【调味】沿锅边淋香醋1勺激香，加生抽2勺、白糖半勺、盐1g炒匀立即出锅。'],tip:'包菜一定要干水下锅，带水就成煮菜。大火快炒2分钟内出锅，保持脆嫩。'},
+{id:60,name:'香菇油菜',emoji:'🥬',cat:'素菜',desc:'荤素搭配清爽版，香菇滑嫩油菜翠绿，宴客素菜',time:'20分钟',diff:'简单',ing:[['上海青(小油菜)','8颗','蔬菜'],['鲜香菇','8朵','蔬菜'],['大蒜','3瓣','蔬菜'],['蚝油','2勺','调料'],['生抽','1勺','调料'],['白糖','半勺','调料'],['淀粉','1勺','调料'],['食用油','2勺','调料']],steps:['【处理】油菜洗净对半切，根部泥沙抠净；香菇去蒂表面切十字花刀。','【焯菜】水开加盐和几滴油，下油菜焯40秒至翠绿捞出摆盘；香菇焯1分钟捞出。','【炒香菇】锅中油2勺爆香蒜末，下香菇中火炒2分钟至出香变软。','【调味】加蚝油2勺、生抽1勺、白糖半勺、水3勺烧开。','【勾芡】淀粉1勺+水2勺淋入推匀，汁浓稠发亮后浇在摆好的油菜上。'],tip:'香菇先焯再炒去土腥。芡汁要亮，浇上去能挂住香菇和菜叶才算成功。'},
+{id:61,name:'蒜蓉粉丝娃娃菜',emoji:'🥬',cat:'素菜',desc:'蒸菜零油烟，粉丝吸满蒜香汤汁比肉还好吃',time:'20分钟',diff:'简单',ing:[['娃娃菜','2颗','蔬菜'],['龙口粉丝','1把约50g','干货'],['大蒜','2头','蔬菜'],['小米椒','2根','蔬菜'],['小葱','2根','蔬菜'],['生抽','2勺','调料'],['蚝油','1勺','调料'],['白糖','半勺','调料'],['食用油','3勺','调料']],steps:['【泡粉】粉丝温水泡15分钟至软，剪短铺在盘底。','【切菜】娃娃菜洗净，每颗竖切成6瓣铺在粉丝上。','【金银蒜】蒜剁末，2勺油小火炒一半蒜末至金黄，关火拌入另一半生蒜，加生抽2勺、蚝油1勺、白糖半勺调匀。','【铺蒸】蒜蓉均匀铺在娃娃菜上，水开上锅中火蒸10分钟。','【激香】出锅撒小米椒圈和葱花，淋1勺烧热的油激香。'],tip:'盘底会蒸出菜汁，别倒掉，正好被粉丝吸收。蒸10分钟足够，娃娃菜过熟会塌。'},
+{id:62,name:'虎皮青椒',emoji:'🫑',cat:'素菜',desc:'椒皮起虎纹，酸甜微辣，米饭杀手',time:'15分钟',diff:'简单',ing:[['螺丝椒(薄皮青椒)','300g','蔬菜'],['大蒜','4瓣','蔬菜'],['生抽','2勺','调料'],['香醋','2勺','调料'],['白糖','2勺','调料'],['盐','1g','调料'],['食用油','2勺','调料']],steps:['【处理】青椒洗净去蒂去籽（怕辣留籽），用刀面轻拍一下便于起皮，彻底沥干。','【干烙】平底锅不放油烧热，下青椒中火干烙，用铲按压，烙至表皮起皱焦斑（虎皮）翻面再烙2分钟，盛出。','【调汁】生抽2勺+香醋2勺+白糖2勺+水2勺调匀。','【烧制】锅中油2勺爆香蒜片，倒入青椒和调好的汁，中火烧2分钟让青椒吸汁。','【收汁】大火收汁至浓稠挂椒，加盐1g翻匀出锅。'],tip:'选皮薄肉脆的螺丝椒才有虎皮效果，厚皮菜椒烙不出皱。干烙不放油是起虎皮的关键。'},
+{id:63,name:'荷兰豆炒木耳',emoji:'🫛',cat:'素菜',desc:'清脆配爽滑，红白绿黑配色清爽，宴客素炒',time:'15分钟',diff:'简单',ing:[['荷兰豆','250g','蔬菜'],['干木耳','15g','干货'],['胡萝卜','半根','蔬菜'],['大蒜','3瓣','蔬菜'],['盐','2g','调料'],['白糖','半勺','调料'],['淀粉','半勺','调料'],['食用油','2勺','调料']],steps:['【泡发】木耳冷水泡2小时（赶时间用温水40分钟），撕小朵洗净；荷兰豆撕去两侧老筋。','【焯水】水开下木耳焯2分钟捞出；同锅加盐几滴油下荷兰豆和胡萝卜片焯1分钟捞出过凉。','【爆香】锅中油2勺下蒜片爆香。','【快炒】倒入所有食材大火翻炒1分钟，加盐2g、白糖半勺炒匀。','【勾薄芡】淀粉半勺+水1勺淋入翻匀，让薄汁挂住食材即出锅。'],tip:'荷兰豆必须彻底做熟（半生有皂素），焯水1分钟+炒1分钟足够。泡木耳别超4小时防变质。'},
+{id:64,name:'红烧茄子',emoji:'🍆',cat:'素菜',desc:'软糯入味不油腻，酱香浓郁的家常经典',time:'25分钟',diff:'中等',ing:[['长茄子','2根约400g','蔬菜'],['土豆淀粉','3勺','调料'],['大蒜','5瓣','蔬菜'],['小葱','2根','蔬菜'],['生抽','2勺','调料'],['老抽','半勺','调料'],['蚝油','1勺','调料'],['白糖','1勺','调料'],['香醋','半勺','调料'],['淀粉','1勺','调料']],steps:['【处理】茄子切滚刀块，撒盐2g腌10分钟逼出水分，挤干（腌过的茄子不吸油）。','【拍粉】茄块拌入土豆淀粉3勺，抖掉多余粉。','【煎炸】锅中油3勺（比平时炒菜多），中火把茄子煎炸3-4分钟至金黄软身，捞出控油。','【调汁】生抽2勺+老抽半勺+蚝油1勺+白糖1勺+淀粉1勺+水5勺调匀。','【烧制】锅留底油爆香蒜末，倒入茄子和调好的汁，中火烧2分钟让茄子吸汁。','【出锅】淋香醋半勺翻匀，撒葱花出锅。'],tip:'盐腌+拍粉双管齐下，茄子吸油量减半还外酥里糯。出锅前那半勺醋是提味的点睛之笔。'},
+{id:65,name:'番茄豆腐',emoji:'🍅',cat:'素菜',desc:'酸甜茄汁裹嫩豆腐，拌饭汤汁都不剩',time:'15分钟',diff:'简单',ing:[['嫩豆腐','1盒约400g','豆制品'],['番茄','2个约300g','蔬菜'],['番茄酱','1勺','调料'],['大蒜','2瓣','蔬菜'],['小葱','1根','蔬菜'],['白糖','1勺','调料'],['盐','2g','调料'],['淀粉','1勺','调料']],steps:['【处理】豆腐切2cm厚片，淡盐水中泡5分钟（去豆腥且不易碎）；番茄去皮切小丁。','【炒茄】锅中油2勺下蒜末爆香，倒番茄丁中火炒4分钟至出沙成酱，加番茄酱1勺、白糖1勺、盐2g炒匀。','【烧豆腐】加半碗水烧开，轻轻滑入豆腐片，中小火烧3分钟让豆腐吸味（轻推锅底别翻炒，豆腐会碎）。','【勾芡】淀粉1勺+水2勺沿锅边淋入，轻推至汤汁浓稠红亮。','【出锅】撒葱花，滴几滴香油装盘。'],tip:'嫩豆腐下锅后只能用勺背轻推或晃锅。番茄炒得越烂，汁越浓越好吃。'}
+,
+{id:66,name:'清炒山药',emoji:'🥢',cat:'素菜',desc:'脆嫩爽滑洁白如玉，清口解腻的养生小炒',time:'15分钟',diff:'简单',ing:[['铁棍山药','300g','蔬菜'],['木耳','8朵','干货'],['胡萝卜','半根','蔬菜'],['小葱','1根','蔬菜'],['盐','2g','调料'],['白醋','1勺','调料'],['淀粉','半勺','调料'],['食用油','2勺','调料']],steps:['【处理】山药戴手套去皮（黏液沾手会痒），切菱形薄片立刻泡入加了白醋1勺的清水（防氧化变黑）。','【焯水】木耳泡发撕小朵；水开下山药片焯1分钟、再下木耳胡萝卜片焯30秒，一起捞出沥干。','【快炒】锅中油2勺烧热，下所有食材大火翻炒1分钟。','【调味】加盐2g、少许水，炒匀。','【出锅】淋薄芡（淀粉半勺+水1勺）翻匀，撒葱段出锅。'],tip:'选铁棍山药，脆糯适中。削皮手痒可先把手在醋水里泡一下。全程大火快炒保持脆感。'},
+{id:67,name:'梅干菜豆腐(绍兴)',emoji:'🧈',cat:'素菜',desc:'绍兴家常味，梅干菜咸香配豆腐嫩滑，越烧越入味',time:'20分钟',diff:'简单',ing:[['老豆腐','1块约400g','豆制品'],['梅干菜','60g','干货'],['五花肉末','50g(可选)','肉类'],['生姜','2片','蔬菜'],['小葱','2根','蔬菜'],['生抽','1勺','调料'],['白糖','1勺','调料'],['淀粉','1勺','调料'],['食用油','3勺','调料']],steps:['【泡菜】梅干菜温水泡20分钟，反复搓洗去沙挤干，切碎后干锅煸2分钟出香。','【煎豆腐】老豆腐切1.5cm厚片，锅中油3勺中火将豆腐两面煎至金黄结壳（煎过的豆腐烧不散更吸味）。','【炒料】锅留底油，有肉末先煸香，下梅干菜和姜末炒2分钟。','【烧制】放入煎好的豆腐，加生抽1勺、白糖1勺、水没过豆腐一半，中火烧6分钟让豆腐吸饱菜香。','【出锅】淀粉1勺+水2勺勾芡，撒葱花装盘。'],tip:'梅干菜咸度不一，先尝再决定加不加盐。用老豆腐别用嫩豆腐，煎烧才成型。'},
+{id:68,name:'清炒莴笋',emoji:'🥬',cat:'素菜',desc:'脆嫩清甜，翠绿欲滴，春天的清爽快炒',time:'10分钟',diff:'简单',ing:[['莴笋','2根约500g','蔬菜'],['大蒜','3瓣','蔬菜'],['红椒','半个','蔬菜'],['盐','2g','调料'],['白糖','半勺','调料'],['食用油','2勺','调料']],steps:['【处理】莴笋削去外层硬皮至露出嫩绿肉，斜切成薄片或条，红椒切丝配色。','【焯水】水开加盐和几滴油，下莴笋焯30秒立刻捞出过凉（保持翠绿脆嫩，也可不焯直接炒）。','【爆香】锅中油2勺下蒜片爆香。','【快炒】倒入莴笋和红椒丝，大火翻炒1分钟。','【调味】加盐2g、白糖半勺炒匀，立即出锅。'],tip:'莴笋皮要削够深，白筋不削净会苦。大火快炒1分钟出锅，炒久出水就不脆了。'},
+{id:69,name:'蒜蓉空心菜',emoji:'🥬',cat:'素菜',desc:'大火爆炒锁住翠绿，蒜香镬气，夏夜排档味',time:'8分钟',diff:'简单',ing:[['空心菜','400g','蔬菜'],['大蒜','6瓣','蔬菜'],['盐','2g','调料'],['白糖','半勺','调料'],['食用油','3勺','调料'],['绍兴黄酒','1勺','调料']],steps:['【处理】空心菜摘去老梗掐成段，洗净后彻底甩干水分（带水下锅会溅油且炒不香）。','【备蒜】大蒜拍碎剁成蒜末，分两份。','【爆香】锅烧至冒烟，下油3勺和一半蒜末爆出香味（2秒即可别焦）。','【爆炒】倒入空心菜转最大火快速翻炒1分钟至叶片变软塌。','【调味】淋黄酒1勺沿锅边激香，加盐2g、白糖半勺和另一半生蒜末，翻炒15秒出锅。'],tip:'火一定要大、锅一定要热，30秒内完成翻面才翠绿不出水。起锅前放生蒜末，蒜香翻倍。'},
+{id:70,name:'上汤娃娃菜',emoji:'🍲',cat:'素菜',desc:'高汤煨菜，配皮蛋咸蛋火腿丁，鲜掉眉毛',time:'20分钟',diff:'简单',ing:[['娃娃菜','2颗','蔬菜'],['皮蛋','1个','蛋奶'],['咸鸭蛋','1个','蛋奶'],['火腿肠(或金华火腿)','50g','肉类'],['大蒜','4瓣','蔬菜'],['高汤或清水','400ml','调料'],['盐','1g','调料'],['白胡椒粉','少许','调料'],['食用油','2勺','调料']],steps:['【备料】皮蛋咸蛋火腿切1cm丁，蒜切片；娃娃菜洗净每颗竖切4瓣。','【炒料】锅中油2勺，下蒜片和三种丁中火炒2分钟至皮蛋微焦出香。','【煮汤】倒入高汤400ml大火烧开，汤色渐渐变白。','【煨菜】放入娃娃菜，中火煨5分钟至菜帮软透吸味。','【调味】加盐1g（咸蛋火腿有咸味，先尝汤再放盐）、白胡椒粉，连汤带菜装碗。'],tip:'皮蛋先炒再煮，汤才会白浓。没有高汤用清水也行，鲜味主要靠三丁。'},
+{id:71,name:'干锅土豆片',emoji:'🥔',cat:'素菜',desc:'外焦里糯，香辣干香，比肉还抢手的干锅菜',time:'25分钟',diff:'简单',ing:[['土豆','2个约400g','蔬菜'],['五花肉片','80g','肉类'],['洋葱','半个','蔬菜'],['青蒜苗','2根','蔬菜'],['干辣椒','5个','调料'],['郫县豆瓣酱','1勺','调料'],['生抽','1勺','调料'],['白糖','半勺','调料'],['孜然粉','半勺(可选)','调料']],steps:['【切片】土豆去皮切5mm厚片，清水洗去表面淀粉沥干。','【煎土豆】平底锅油3勺，土豆片中火煎至两面金黄结壳（约6分钟），盛出。','【煸肉】锅留底油，下五花肉片煸至吐油微卷，下豆瓣酱1勺和干辣椒炒出红油。','【合炒】下洋葱丝炒1分钟出香，倒入土豆片，加生抽1勺、白糖半勺、孜然粉翻炒均匀。','【干香】转中大火炒2分钟让土豆边缘微焦更干香，下青蒜苗段炒30秒断生出锅。'],tip:'土豆片煎到金黄硬壳才有外焦里糯的口感。全程不加水，「干锅」就吃这个干香。'},
+{id:72,name:'素炒三丝',emoji:'🥕',cat:'素菜',desc:'土豆青椒胡萝卜三色三丝，清爽快手家常炒',time:'15分钟',diff:'简单',ing:[['土豆','1个约250g','蔬菜'],['青椒','1个','蔬菜'],['胡萝卜','半根','蔬菜'],['大蒜','2瓣','蔬菜'],['盐','2g','调料'],['香醋','1勺','调料'],['白糖','半勺','调料'],['食用油','2勺','调料']],steps:['【切丝】土豆去皮切细丝泡水洗去淀粉沥干；青椒胡萝卜切同样粗细的丝（三丝粗细一致受热均匀）。','【焯水】水开下土豆丝胡萝卜丝焯40秒捞出沥干（缩短炒制时间保持脆感）。','【爆香】锅中油2勺下蒜末爆香。','【快炒】倒入三丝大火翻炒1.5分钟至青椒丝断生。','【调味】加盐2g、白糖半勺，沿锅边淋香醋1勺炒匀出锅。'],tip:'土豆丝泡水去淀粉才根根分明不粘连。喜欢辣可加干辣椒炝锅。'},
+{id:73,name:'荠菜豆腐(浙江时令)',emoji:'🌿',cat:'素菜',desc:'清明前后的江南时鲜，清香嫩滑，一口春天',time:'15分钟',diff:'简单',ing:[['荠菜','200g','蔬菜'],['嫩豆腐','1盒约400g','豆制品'],['生姜','2片','蔬菜'],['盐','2g','调料'],['淀粉','1勺','调料'],['香油','几滴','调料'],['食用油','1勺','调料']],steps:['【洗菜】荠菜摘去老根黄叶，流水反复冲洗去泥沙（荠菜贴地长，沙多），焯水30秒捞出过凉挤干切碎。','【处理豆腐】嫩豆腐切1cm小丁，淡盐水中浸泡定型。','【煮豆腐】锅中加水300ml、姜片和油1勺烧开，轻滑入豆腐丁煮2分钟。','【下荠菜】放入荠菜碎煮1分钟出清香，加盐2g调味。','【勾芡】淀粉1勺+水2勺淋入轻推成薄羹，滴香油出锅。'],tip:'荠菜焯水去草酸且保持翠绿。没有鲜荠菜可用冷冻荠菜，香味不减。做成羹状最能体现嫩滑。'},
+{id:74,name:'醋溜白菜',emoji:'🥬',cat:'素菜',desc:'酸香脆爽，冬储白菜也能炒出饭店味',time:'12分钟',diff:'简单',ing:[['大白菜','半颗约500g','蔬菜'],['干辣椒','4个','调料'],['花椒','1小撮','调料'],['大蒜','3瓣','蔬菜'],['香醋','3勺','调料'],['生抽','1勺','调料'],['白糖','1勺','调料'],['盐','1g','调料'],['淀粉','半勺','调料']],steps:['【改刀】白菜帮和叶分开：帮斜刀片成薄片（增大断面易入味），叶撕成大块。','【调汁】香醋2勺+生抽1勺+白糖1勺+淀粉半勺+水2勺调匀。','【炝锅】锅中油2勺，下花椒小火炸香捞出，下干辣椒蒜片爆香。','【炒菜帮】先下白菜帮大火炒1.5分钟至半透明。','【合炒】下白菜叶再炒1分钟至软塌，淋入调好的汁快速炒匀，起锅前沿锅边补1勺香醋激香。'],tip:'帮和叶分先后下锅，熟度才一致。醋两次放法与酸辣土豆丝同理：先入味后提香。'},
+{id:75,name:'腌笃鲜(浙江)',emoji:'🍲',cat:'汤类',desc:'江南春天的顶流汤，咸肉鲜肉春笋合炖，鲜到眉毛掉',time:'90分钟',diff:'中等',ing:[['咸肉(或火腿)','200g','肉类'],['鲜五花肉或蹄髈','300g','肉类'],['春笋','400g','蔬菜'],['百叶结','10个','豆制品'],['生姜','4片','蔬菜'],['绍兴黄酒','3勺','调料'],['小葱','2根','蔬菜'],['白胡椒粉','少许','调料']],steps:['【处理】咸肉温水泡30分钟去多余盐分切厚片；鲜肉切块冷水下锅加姜片黄酒1勺，水开撇沫煮3分钟捞出冲净。','【处理笋】春笋剥壳切滚刀块，冷水下锅焯3分钟去涩捞出。','【入锅】砂锅放入咸肉、鲜肉、姜片，加足量开水（一次加够1800ml），淋黄酒2勺。','【慢炖】大火烧开转小火加盖炖45分钟至汤色奶白。','【下笋】加入春笋块和百叶结，继续小火炖25分钟。','【调味】尝咸淡——咸肉有盐一般不用再加盐，撒白胡椒粉和葱花出锅。'],tip:'「腌」指咸肉「鲜」指鲜肉「笃」是上海话小火慢炖的意思。汤咸了就加水再笃10分钟，千万别先放盐。'},
+{id:76,name:'番茄牛腩汤',emoji:'🍅',cat:'汤类',desc:'酸甜浓汤炖软糯牛腩，冬天的一碗暖',time:'2小时',diff:'简单',ing:[['牛腩','600g','肉类'],['番茄','4个约500g','蔬菜'],['番茄酱','2勺','调料'],['洋葱','半个','蔬菜'],['生姜','4片','蔬菜'],['八角','1颗','调料'],['绍兴黄酒','2勺','调料'],['盐','4g','调料'],['白糖','1勺','调料'],['小葱','2根','蔬菜']],steps:['【焯水】牛腩切3cm块，冷水下锅加姜片黄酒2勺，水开撇沫煮5分钟，捞出温水冲净。','【炒番茄】番茄去皮切块（留1个最后放），锅中油2勺下洋葱丁炒软，下番茄块和番茄酱2勺中火炒5分钟至浓稠出沙。','【炖煮】牛腩倒入炒匀，加开水1800ml（必须开水，肉才不柴）、八角、姜片，大火烧开转小火加盖炖90分钟至牛腩软烂。','【补番茄】放入预留的番茄块再炖15分钟（后放的番茄保留果肉口感）。','【调味】加盐4g、白糖1勺，撒葱花出锅。'],tip:'番茄分两批放：先放的融进汤底，后放的保留果肉。用高压锅可缩短至35分钟。'},
+{id:77,name:'玉米排骨汤',emoji:'🌽',cat:'汤类',desc:'清甜滋润的家常靓汤，孩子能喝两大碗',time:'70分钟',diff:'简单',ing:[['猪肋排','500g','肉类'],['甜玉米','2根','蔬菜'],['胡萝卜','1根','蔬菜'],['生姜','4片','蔬菜'],['绍兴黄酒','1勺','调料'],['盐','4g','调料'],['小葱','1根','蔬菜']],steps:['【焯水】排骨冷水下锅加姜片黄酒，水开撇净浮沫煮3分钟，捞出温水冲净（用温水冲肉不紧缩）。','【备菜】玉米切段，胡萝卜切滚刀块。','【炖煮】砂锅放排骨和姜片，加足量开水1600ml，大火烧开转小火炖30分钟。','【下配菜】加入玉米和胡萝卜继续炖30分钟至玉米香气融入汤中。','【调味】加盐4g再煮5分钟，撒葱花出锅。'],tip:'选甜玉米汤才清甜，糯玉米汤更浓但不够甜。盐最后放，早放肉柴。'},
+{id:78,name:'冬瓜排骨汤',emoji:'🍈',cat:'汤类',desc:'夏天消暑第一汤，清淡鲜甜不油腻',time:'60分钟',diff:'简单',ing:[['猪肋排','400g','肉类'],['冬瓜','600g','蔬菜'],['生姜','4片','蔬菜'],['虾皮','1勺(可选)','干货'],['绍兴黄酒','1勺','调料'],['盐','3g','调料'],['小葱','2根','蔬菜'],['白胡椒粉','少许','调料']],steps:['【焯水】排骨冷水下锅加姜片黄酒，水开撇沫煮3分钟捞出冲净。','【炖排骨】砂锅加开水1500ml、排骨、姜片，大火烧开转小火炖35分钟。','【处理冬瓜】冬瓜去皮去瓤切3cm厚块（皮想去暑气也可保留洗净）。','【下冬瓜】放入冬瓜块（和虾皮）继续炖15分钟至冬瓜半透明。','【调味】加盐3g、白胡椒粉，撒葱花出锅。'],tip:'冬瓜后放，炖到半透明即熟，久了会化。汤要清就全程小火微沸。'}
+,
+{id:79,name:'紫菜蛋花汤',emoji:'🍥',cat:'汤类',desc:'3分钟快手汤，紫菜鲜香蛋花轻盈，家常必备',time:'8分钟',diff:'简单',ing:[['紫菜','10g','干货'],['鸡蛋','2个','蛋奶'],['虾皮','1勺','干货'],['小葱','1根','蔬菜'],['盐','2g','调料'],['香油','几滴','调料'],['白胡椒粉','少许','调料']],steps:['【备料】紫菜撕小块，鸡蛋打散加几滴水淀粉（蛋花更漂亮），虾皮冲洗一下。','【煮汤】锅中加水600ml烧开，下紫菜和虾皮煮1分钟出香。','【淋蛋】转小火让汤面微沸，将蛋液绕圈细细淋入，5秒内不要搅动（蛋花成型的关键）。','【调味】蛋花浮起后轻推，加盐2g、白胡椒粉，关火。','【出锅】滴香油、撒葱花装碗。'],tip:'蛋液要在汤微沸时淋入，滚沸会冲碎蛋花。全程3分钟内完成，紫菜煮久发苦。'},
+{id:80,name:'酸辣汤',emoji:'🌶️',cat:'汤类',desc:'胡椒的辣香醋的酸，暖胃开胃，饭后一碗舒坦',time:'15分钟',diff:'简单',ing:[['嫩豆腐','半盒约150g','豆制品'],['木耳','5朵','干货'],['鸡蛋','1个','蛋奶'],['火腿肠','1根','肉类'],['香菇','2朵','蔬菜'],['香醋','3勺','调料'],['白胡椒粉','1勺','调料'],['生抽','1勺','调料'],['淀粉','2勺','调料'],['盐','2g','调料'],['香油','几滴','调料']],steps:['【切丝】豆腐、木耳（泡发）、火腿肠、香菇全部切细丝，粗细一致才美观。','【煮汤】锅中加高汤或清水700ml烧开，下木耳丝香菇丝煮2分钟，再下豆腐丝火腿丝煮1分钟。','【调味】加生抽1勺、盐2g、白胡椒粉1勺（酸辣汤的「辣」全靠胡椒粉，量要足）。','【勾芡】淀粉2勺+水4勺调匀淋入，推至汤汁浓稠能挂勺（先勾芡后淋蛋，蛋花才悬浮漂亮）。','【淋蛋】转小火，蛋液绕圈淋入静置5秒再轻推。','【点醋】关火后淋香醋3勺（醋后放酸香不挥发），滴香油撒香菜葱花。'],tip:'顺序要记牢：先调味→再勾芡→后淋蛋→关火放醋。醋久煮酸味挥发殆尽。'},
+{id:81,name:'山药排骨汤',emoji:'🍲',cat:'汤类',desc:'健脾养胃的温和靓汤，山药粉糯汤色清甜',time:'70分钟',diff:'简单',ing:[['猪肋排','500g','肉类'],['铁棍山药','400g','蔬菜'],['枸杞','1小把','干货'],['生姜','4片','蔬菜'],['绍兴黄酒','1勺','调料'],['盐','4g','调料'],['小葱','1根','蔬菜']],steps:['【焯水】排骨冷水下锅加姜片黄酒，水开撇沫煮3分钟，捞出温水冲净。','【炖排骨】砂锅加开水1600ml、排骨、姜片，大火烧开转小火炖40分钟。','【处理山药】山药戴手套去皮切滚刀块，泡入清水防氧化。','【下山药】放入山药块继续炖20分钟至山药粉糯（筷子轻插即透）。','【调味】加盐4g和枸杞再煮3分钟，撒葱花出锅。'],tip:'山药后放，早放会炖化在汤里。选铁棍山药，面糯适合炖汤；菜山药脆适合炒。'},
+{id:82,name:'银耳莲子羹',emoji:'🍮',cat:'汤类',desc:'胶质满满清甜滋润，冷藏后更好喝的甜品汤',time:'90分钟',diff:'简单',ing:[['干银耳','半朵约15g','干货'],['莲子','30g','干货'],['红枣','6颗','干货'],['枸杞','1小把','干货'],['冰糖','40g','调料'],['桂花','少许(可选)','干货']],steps:['【泡发】银耳冷水泡2小时至完全舒展，剪去黄色硬根，撕成小朵（越碎越易出胶）。','【炖煮】银耳入锅加水1000ml，大火烧开转小火炖40分钟，期间搅拌几次防粘底。','【出胶】用勺背把部分银耳压碎再炖20分钟，汤汁开始浓稠出胶。','【下配料】加入莲子红枣继续炖20分钟至莲子粉糯。','【调味】放冰糖40g煮化，关火前撒枸杞，喜欢桂花的点缀少许，冷藏2小时后风味更佳。'],tip:'银耳一定要撕小朵+小火慢炖才出胶。莲子不用提前泡，直接炖20分钟正好粉糯不烂。'},
+{id:83,name:'黄鱼羹(浙江)',emoji:'🐟',cat:'汤类',desc:'宁波绍兴传统羹汤，鱼肉如雪羹汤似绸，宴客显功夫',time:'35分钟',diff:'较难',ing:[['小黄鱼','2条约350g','海鲜'],['嫩豆腐','半盒约150g','豆制品'],['火腿丝','30g','肉类'],['香菇','3朵','蔬菜'],['冬笋(或春笋)','50g','蔬菜'],['鸡蛋','1个','蛋奶'],['生姜','3片','蔬菜'],['绍兴黄酒','2勺','调料'],['淀粉','3勺','调料'],['白胡椒粉','少许','调料'],['香醋','1勺','调料'],['盐','2g','调料']],steps:['【蒸鱼拆骨】黄鱼洗净加姜片黄酒蒸10分钟，稍凉后仔细拆出鱼肉，剔净全部鱼刺；鱼骨鱼头回锅加水500ml熬10分钟成鱼汤，滤净备用。','【切配料】豆腐、香菇、冬笋、火腿全部切细丝，粗细一致。','【煮羹】鱼汤烧开，下香菇丝笋丝火腿丝煮3分钟，再下豆腐丝和鱼肉煮2分钟（鱼肉最后放防煮散）。','【勾芡】淀粉3勺+水6勺调匀，分两次淋入边淋边推，至羹汤浓稠如绸缎能挂勺。','【淋蛋】转小火淋入蛋液成蛋花，加盐2g、白胡椒粉调味。','【点睛】关火淋香醋1勺，撒葱花香菜，配醋碟上桌。'],tip:'拆鱼刺要耐心，对着光检查。羹的浓稠标准：勺子划过能短暂见锅底。胡椒粉和醋是黄鱼羹灵魂。'},
+{id:84,name:'番茄蛋汤',emoji:'🍅',cat:'汤类',desc:'红黄相间的快手汤，酸甜清爽百搭一餐',time:'10分钟',diff:'简单',ing:[['番茄','2个约300g','蔬菜'],['鸡蛋','2个','蛋奶'],['小葱','1根','蔬菜'],['盐','2g','调料'],['白糖','半勺','调料'],['香油','几滴','调料'],['淀粉','1勺','调料'],['食用油','1勺','调料']],steps:['【备料】番茄去皮切小丁，鸡蛋打散，葱切葱花。','【炒番茄】锅中油1勺，下番茄丁中火炒3分钟至软烂出沙（炒过的番茄汤才浓）。','【煮汤】加水700ml大火烧开，煮2分钟，加盐2g、白糖半勺调味。','【勾芡淋蛋】淀粉1勺+水2勺淋入推匀，转小火淋入蛋液，5秒后轻推成蛋花。','【出锅】滴香油撒葱花装碗。'],tip:'番茄去皮口感更好：顶部划十字开水烫30秒即可撕。先勾薄芡再淋蛋，蛋花悬浮如云朵。'},
+{id:85,name:'罗宋汤',emoji:'🥣',cat:'汤类',desc:'海派西餐经典，番茄浓汤炖牛肉卷心菜，酸甜暖身',time:'2小时',diff:'中等',ing:[['牛腩','400g','肉类'],['番茄','3个','蔬菜'],['番茄酱','3勺','调料'],['卷心菜','1/4颗','蔬菜'],['土豆','1个','蔬菜'],['胡萝卜','1根','蔬菜'],['洋葱','1个','蔬菜'],['芹菜','1根','蔬菜'],['黄油','20g','蛋奶'],['香叶','2片','调料'],['盐','4g','调料'],['白糖','1勺','调料'],['黑胡椒粉','少许','调料']],steps:['【炖牛肉】牛腩切块焯水冲净，加开水1500ml、香叶2片，小火炖60分钟至八分软。','【炒底料】平底锅下黄油20g，洋葱丁芹菜丁中火炒软出香（约4分钟）。','【炒番茄】下去皮番茄块和番茄酱3勺炒5分钟至浓稠红亮，倒入牛肉汤中。','【下蔬菜】土豆胡萝卜切块下锅，继续炖25分钟至蔬菜软糯。','【收尾】下卷心菜块再煮8分钟，加盐4g、白糖1勺、黑胡椒粉调味。'],tip:'番茄酱要用黄油炒透才没有生酸味。正宗罗宋汤用甜菜头，家庭版用番茄替代一样好喝。'},
+{id:86,name:'鸡汤(清炖)',emoji:'🐔',cat:'汤类',desc:'一锅清炖土鸡汤，汤清味醇，百搭配菜',time:'2小时',diff:'简单',ing:[['土鸡','半只约800g','肉类'],['生姜','5片','蔬菜'],['小葱','3根','蔬菜'],['绍兴黄酒','2勺','调料'],['盐','4g','调料'],['枸杞','1小把','干货'],['红枣','4颗(可选)','干货']],steps:['【处理】土鸡剁大块，去除多余脂肪和鸡屁股，冷水浸泡20分钟去血水，再冷水下锅焯水，水开撇沫煮3分钟捞出冲净。','【入锅】鸡块放入砂锅，加姜片葱结、黄酒2勺，一次性加足开水1800ml。','【慢炖】大火烧开转最小火，保持汤面「菊花心」微沸，加盖炖90分钟。','【撇油】炖至1小时时用勺撇去汤面多余浮油（留薄薄一层最香，撇净则汤寡）。','【调味】捡去葱结，加盐4g、红枣再炖15分钟，关火撒枸杞。'],tip:'好鸡只需姜葱盐，香料一概不放。全程小火微沸，汤才清澈金黄；大火滚则汤浑。'},
+{id:87,name:'凉拌黄瓜',emoji:'🥒',cat:'凉菜',desc:'拍出来的才入味，蒜香酸爽，夏日开胃第一菜',time:'10分钟',diff:'简单',ing:[['黄瓜','3根约400g','蔬菜'],['大蒜','4瓣','蔬菜'],['小米椒','2根','蔬菜'],['香醋','2勺','调料'],['生抽','2勺','调料'],['白糖','1勺','调料'],['香油','1勺','调料'],['盐','2g','调料']],steps:['【拍瓜】黄瓜洗净，用刀面拍裂（拍出的断面粗糙才挂汁）再切成段。','【杀水】加盐2g抓匀腌10分钟，倒掉杀出的水分（黄瓜更脆且不冲淡调料）。','【切配】大蒜剁成细末，小米椒切圈，小葱切葱花备用。','【调汁】蒜末小米椒加香醋2勺、生抽2勺、白糖1勺、香油1勺调匀。','【拌匀】料汁倒入黄瓜拌匀，冷藏10分钟再吃更入味爽口。'],tip:'「拍」而不是「切」是入味关键。杀出的水一定要倒掉，否则调料被稀释。'},
+{id:88,name:'皮蛋豆腐',emoji:'🥚',cat:'凉菜',desc:'嫩豆腐配溏心皮蛋，淋上料汁冰凉滑嫩',time:'10分钟',diff:'简单',ing:[['内酯豆腐','1盒约400g','豆制品'],['皮蛋','2个','蛋奶'],['小葱','2根','蔬菜'],['小米椒','1根','蔬菜'],['生抽','2勺','调料'],['香醋','1勺','调料'],['白糖','半勺','调料'],['香油','1勺','调料'],['食用油','1勺','调料']],steps:['【处理豆腐】内酯豆腐倒扣脱盒，切厚片摆盘；讲究些可上锅蒸5分钟去豆腥（放凉后再拌）。','【切皮蛋】皮蛋剥壳，刀上抹点油防粘，每个切4瓣摆在豆腐上。','【调汁】生抽2勺+香醋1勺+白糖半勺+香油1勺调匀。','【泼油】葱花小米椒圈铺在最上面，烧1勺热油泼香，再淋料汁。','【冷藏】冷藏15分钟后食用，冰凉嫩滑风味最佳。'],tip:'皮蛋选溏心的，蛋黄呈琥珀色流心最好吃。料汁别太咸，靠生抽的鲜就够了。'},
+{id:89,name:'醉毛豆(绍兴)',emoji:'🫛',cat:'凉菜',desc:'绍兴夏夜老酒伴侣，糟香酒香沁入豆粒',time:'20分钟+冷藏2小时',diff:'简单',ing:[['毛豆','500g','蔬菜'],['绍兴黄酒','100ml','调料'],['糟卤','3勺','调料'],['盐','10g','调料'],['白糖','1勺','调料'],['花椒','1小撮','调料'],['八角','1颗','调料'],['生姜','3片','蔬菜']],steps:['【处理】毛豆剪去两头（便于入味），流水搓洗绒毛。','【煮豆】水烧开加盐8g、花椒、八角、姜片，下毛豆中火煮8分钟至豆粒酥软，捞出。','【过凉】迅速投入冰水浸5分钟至凉透（保持翠绿和口感）。','【调醉卤】黄酒100ml+糟卤3勺+盐2g+白糖1勺+煮豆水100ml调匀放凉。','【醉制】毛豆沥干浸入醉卤，冷藏2小时以上，中途翻动一次，连卤上桌。'],tip:'毛豆两头必剪，否则卤汁进不去。醉卤必须凉透，热卤会把毛豆焖黄。'},
+{id:90,name:'凉拌木耳',emoji:'🍄',cat:'凉菜',desc:'爽脆弹牙，酸辣开胃，减脂期也能放开吃',time:'20分钟',diff:'简单',ing:[['干木耳','20g','干货'],['黄瓜','半根','蔬菜'],['胡萝卜','半根','蔬菜'],['大蒜','3瓣','蔬菜'],['小米椒','2根','蔬菜'],['香醋','2勺','调料'],['生抽','2勺','调料'],['白糖','1勺','调料'],['香油','1勺','调料'],['香菜','2根','蔬菜']],steps:['【泡发】木耳冷水泡2小时至完全舒展（泡发别超4小时），去硬根撕小朵洗净。','【焯水】水开下木耳焯2分钟，捞出过凉开水沥干；胡萝卜片顺便焯30秒。','【配菜】黄瓜拍裂切段，蒜切末，小米椒切圈，香菜切段。','【调汁】蒜末+小米椒+香醋2勺+生抽2勺+白糖1勺+香油1勺调匀。','【拌匀】所有食材与料汁拌匀，冷藏20分钟后装盘撒香菜。'],tip:'木耳焯透才安全（去秋水仙碱类物质）。口感层次=木耳脆+黄瓜爽，冷藏后更开胃。'},
+{id:91,name:'凉拌藕片',emoji:'🪷',cat:'凉菜',desc:'孔孔分明洁白如玉，酸甜脆嫩的江南凉菜',time:'20分钟',diff:'简单',ing:[['莲藕','1节约400g','蔬菜'],['小葱','2根','蔬菜'],['小米椒','2根','蔬菜'],['香醋','2勺','调料'],['白糖','2勺','调料'],['盐','2g','调料'],['香油','1勺','调料'],['白醋','1勺','调料']],steps:['【切片】莲藕去皮切2mm薄片，立刻泡入加了白醋1勺的清水（防氧化发黑）。','【焯水】水烧开下藕片焯1-2分钟至半透明，捞出迅速过冰水（脆感关键），沥干。','【调汁】香醋2勺+白糖2勺+盐2g+香油1勺调匀成酸甜汁。','【拌匀】藕片与料汁拌匀，加小米椒圈和葱花，冷藏30分钟入味。','【装盘】摆盘时藕片层层叠起，孔洞分明最好看。'],tip:'选七孔藕（红花藕）粉、九孔藕（白花藕）脆——凉拌选九孔白藕。焯水用不锈钢锅，铁锅会把藕煮黑。'}
+,
+{id:92,name:'老醋花生',emoji:'🥜',cat:'凉菜',desc:'花生酥脆老醋醇厚，下酒小菜之王',time:'20分钟',diff:'简单',ing:[['花生米','250g','干货'],['洋葱','1/4个','蔬菜'],['青红椒','各半个','蔬菜'],['香醋','3勺','调料'],['白糖','2勺','调料'],['生抽','1勺','调料'],['食用油','适量','调料']],steps:['【冷油下锅】花生米与冷油同时下锅（冷油慢炸受热均匀不炸糊），中小火慢炸。','【炸花生】期间不停翻动，炸约6-8分钟至花生「噼啪」声变少、颜色微深立即捞出（余温还会加深颜色）。','【晾脆】摊开彻底晾凉（约20分钟），凉透的花生才酥脆。','【调汁】香醋3勺+白糖2勺+生抽1勺小火煮化白糖，彻底放凉成老醋汁。','【拌匀】吃之前才把花生、洋葱丁、青红椒丁与老醋汁拌匀（拌早了花生回软）。'],tip:'两个铁律：花生必须凉透才脆；汁必须上桌前才拌。热花生拌汁3分钟就皮了。'},
+{id:93,name:'糟鸡爪(绍兴)',emoji:'🐔',cat:'凉菜',desc:'绍兴糟货代表，皮脆骨边肉弹，糟香入骨越啃越香',time:'40分钟+冷藏4小时',diff:'中等',ing:[['鸡爪','500g','肉类'],['香糟卤','250ml','调料'],['绍兴黄酒','3勺','调料'],['生姜','4片','蔬菜'],['小葱','2根','蔬菜'],['花椒','1小撮','调料'],['盐','3g','调料'],['冰块','1盆','调料']],steps:['【处理】鸡爪剪去趾甲，对半剁开，冷水浸泡20分钟去血水。','【煮制】冷水下锅加姜片葱结黄酒3勺花椒，水开后转中小火煮12分钟（煮到皮糯骨边肉熟但不烂）。','【冰镇】捞出立刻投入冰水，浸泡30分钟至彻底凉透——这一步让鸡皮收缩变脆弹。','【沥干】鸡爪捞出彻底沥干水分（带水会稀释糟卤）。','【糟制】鸡爪浸入糟卤250ml（需完全没过），密封冷藏4小时以上，过夜风味最佳。','【上桌】捞出装盘，淋少许糟卤即可冷食。'],tip:'糟卤是绍兴宝，超市有瓶装现成的。卤汁可重复糟一次毛豆或花生，鲜味加倍但不能存太久。'},
+{id:94,name:'口水鸡',emoji:'🌶️',cat:'凉菜',desc:'川味凉菜头牌，红油麻辣鸡肉嫩滑，口水直流',time:'40分钟',diff:'中等',ing:[['鸡腿','3个约500g','肉类'],['花椒粉','1勺','调料'],['辣椒面','2勺','调料'],['花生碎','2勺','干货'],['白芝麻','1勺','干货'],['生抽','3勺','调料'],['香醋','2勺','调料'],['白糖','1勺','调料'],['大蒜','4瓣','蔬菜'],['小葱','2根','蔬菜'],['生姜','3片','蔬菜'],['绍兴黄酒','1勺','调料']],steps:['【煮鸡】鸡腿冷水下锅加姜片葱结黄酒，水开转小火煮15分钟，关火焖10分钟。','【冰镇】捞出投入冰水浸15分钟至凉透（皮脆肉嫩的秘诀），沥干斩件摆盘。','【炼红油】辣椒面2勺+花椒粉1勺+白芝麻放碗中，烧热3勺油至冒烟后分两次泼入搅拌（一次泼会焦）。','【调汁】红油中加入生抽3勺、香醋2勺、白糖1勺、蒜末、少许煮鸡原汤调匀。','【淋汁】料汁均匀淋在鸡块上，撒花生碎和葱花，静置10分钟入味再吃。'],tip:'鸡要「煮+焖」浸熟，肉才嫩不柴。红油泼两次：第一次激香，第二次出色。'},
+{id:95,name:'蒜泥白肉',emoji:'🥓',cat:'凉菜',desc:'川式经典冷盘，肉片薄透光，蒜泥红油香浓不腻',time:'45分钟',diff:'中等',ing:[['带皮五花肉(二刀肉最佳)','400g','肉类'],['黄瓜','1根','蔬菜'],['大蒜','1整头','蔬菜'],['生抽','3勺','调料'],['香醋','1勺','调料'],['白糖','1勺','调料'],['辣椒油','2勺','调料'],['绍兴黄酒','2勺','调料'],['生姜','4片','蔬菜'],['小葱','2根','蔬菜']],steps:['【煮肉】整块肉冷水下锅，加姜片葱结黄酒2勺，水开转小火煮30分钟（筷子能插透皮即熟），关火在原汤中浸15分钟。','【冰镇】捞出投入冰水浸20分钟至彻底凉透——肉质紧实才好切薄片。','【蒜泥】大蒜用蒜臼捣成泥（捣的比切的出味），加生抽3勺、香醋1勺、白糖1勺、辣椒油2勺和2勺煮肉原汤调成蒜泥汁。','【切片】肉沥干，用锋利的刀切成能透光的大薄片（约2mm），整齐铺在盘中的黄瓜片上。','【淋汁】蒜泥汁均匀淋在肉片上，静置5分钟即可食用。'],tip:'肉半冻状态（冷藏30分钟）最好切薄片。蒜泥一定要捣不能用压蒜器，出汁程度差很多。'},
+{id:96,name:'凉拌三丝',emoji:'🥗',cat:'凉菜',desc:'海带粉丝胡萝卜三色丝，清爽低卡的万能凉菜',time:'20分钟',diff:'简单',ing:[['海带丝','200g','蔬菜'],['龙口粉丝','1把约50g','干货'],['胡萝卜','半根','蔬菜'],['黄瓜','半根','蔬菜'],['大蒜','3瓣','蔬菜'],['香醋','2勺','调料'],['生抽','2勺','调料'],['白糖','1勺','调料'],['香油','1勺','调料'],['辣椒油','1勺(可选)','调料']],steps:['【泡粉丝】粉丝温水泡15分钟至软，剪成两段。','【焯水】海带丝焯水3分钟去腥味；粉丝和胡萝卜丝焯1分钟，全部捞出过凉沥干。','【切丝】黄瓜切丝（不焯水保持脆），蒜剁末。','【调汁】蒜末+香醋2勺+生抽2勺+白糖1勺+香油1勺+辣椒油调匀。','【拌匀】所有丝与料汁拌匀，冷藏20分钟装盘。'],tip:'三丝长短粗细尽量一致，摆盘好看入味均匀。所有食材必须沥干，否则出水冲淡味道。'},
+{id:97,name:'泡椒凤爪',emoji:'🌶️',cat:'凉菜',desc:'酸辣脆爽追剧零食，自己做干净放心',time:'40分钟+冷藏1天',diff:'简单',ing:[['鸡爪','500g','肉类'],['泡椒','1瓶约200g','调料'],['小米椒','10根','蔬菜'],['花椒','1勺','调料'],['生姜','4片','蔬菜'],['白醋','3勺','调料'],['白糖','2勺','调料'],['盐','5g','调料'],['绍兴黄酒','2勺','调料']],steps:['【处理】鸡爪剪去趾甲对半剁开，冷水浸泡20分钟去血水。','【煮制】冷水下锅加姜片黄酒，水开后中小火煮10分钟（刚熟即可，煮过头不脆）。','【冰镇】捞出立刻冲凉再浸冰水30分钟至彻底凉透，鸡皮才会脆爽。','【调泡汁】泡椒连汁倒入容器，加小米椒圈、花椒、白醋3勺、白糖2勺、盐5g、凉开水300ml调匀。','【浸泡】鸡爪沥干放入泡汁完全淹没，密封冷藏24小时后食用，可保存1周。'],tip:'泡汁要没过鸡爪，中途翻动一次入味均匀。喜欢更酸可多加白醋，别用陈醋（颜色深味重）。'},
+{id:98,name:'糖拌番茄',emoji:'🍅',cat:'凉菜',desc:'童年味道，冰镇番茄撒白糖，酸甜汁都能喝光',time:'10分钟',diff:'简单',ing:[['沙瓤番茄','3个约450g','蔬菜'],['白糖','3勺','调料'],['桂花','少许(可选)','干货']],steps:['【选番茄】挑熟透的沙瓤番茄（捏着微软、颜色通红），洗净。','【冰镇】整颗冷藏1小时或冰水浸20分钟（冰过的番茄更好切且更爽口）。','【切片】切去蒂部，横切成1cm厚片，摆入盘中。','【撒糖】均匀撒上白糖3勺，冷藏15分钟让糖化成糖浆。','【点缀】喜欢桂花的撒少许干桂花增香，连糖浆一起食用。'],tip:'糖拌番茄的灵魂是盘底的番茄糖浆，别浪费。番茄要现拌现吃，放久出水口感变差。'},
+{id:99,name:'蛋炒饭',emoji:'🍚',cat:'主食',desc:'金包银粒粒分明，家常炒饭的基本功',time:'10分钟',diff:'简单',ing:[['隔夜米饭','2碗约400g','主食'],['鸡蛋','3个','蛋奶'],['小葱','2根','蔬菜'],['火腿肠','1根(可选)','肉类'],['盐','2g','调料'],['生抽','1勺','调料'],['白胡椒粉','少许','调料'],['食用油','3勺','调料']],steps:['【备饭】隔夜饭提前打散（戴手套抓散或勺背压散），冰箱取出回温10分钟。','【炒蛋】热锅下油2勺烧至六成热，倒入打散的蛋液，膨起后快速划散至八分熟盛出。','【炒饭】补油1勺，倒入米饭中大火翻炒2分钟，用铲竖切压散，炒至米粒在锅中「跳舞」。','【合炒】倒回鸡蛋，加火腿丁，沿锅边淋生抽1勺（锅边高温激出酱香），加盐2g、白胡椒粉炒匀。','【出锅】撒大把葱花翻炒10秒立即出锅。'],tip:'「金包银」做法：蛋黄先拌入米饭再下锅炒，粒粒金黄。饭要隔夜冷藏饭，水分少才粒粒分明。'},
+{id:100,name:'葱油拌面',emoji:'🍜',cat:'主食',desc:'上海绍兴经典，葱油熬到焦香，拌面一绝',time:'25分钟',diff:'简单',ing:[['细面条(鲜面最佳)','200g','主食'],['小葱','1大把约100g','蔬菜'],['生姜','2片','蔬菜'],['生抽','3勺','调料'],['老抽','1勺','调料'],['白糖','1.5勺','调料'],['食用油','80ml','调料']],steps:['【备葱】小葱洗净彻底晾干水分（带水熬油会溅），切成5cm段，葱白葱绿分开。','【熬葱油】冷油下葱白和姜片，小火慢熬5分钟；再下葱绿继续小火熬10-15分钟，至葱段变焦黄干瘪（颜色深棕别熬黑），捞出葱姜，葱油留锅。','【调汁】葱油中加生抽3勺、老抽1勺、白糖1.5勺和2勺清水，小火煮开成葱油汁。','【煮面】另锅水开下面条，煮至刚断生（鲜面约2分钟），捞出沥干。','【拌面】趁热淋上葱油汁快速拌匀，让每根面条裹上酱色，可配煎蛋。'],tip:'葱油成败在耐心：全程小火熬到葱焦黄，火大发苦火小不香。葱油汁可多做，冰箱存2周拌啥都香。'},
+{id:101,name:'西红柿鸡蛋面',emoji:'🍝',cat:'主食',desc:'酸甜汤底配手擀面，中国家庭的暖心味道',time:'20分钟',diff:'简单',ing:[['面条','200g','主食'],['番茄','2个约300g','蔬菜'],['鸡蛋','2个','蛋奶'],['小葱','2根','蔬菜'],['番茄酱','1勺','调料'],['盐','3g','调料'],['白糖','1勺','调料'],['生抽','1勺','调料'],['香油','几滴','调料']],steps:['【炒番茄】番茄去皮切块；锅中油2勺下番茄块中火炒4分钟至出沙，加番茄酱1勺炒匀。','【煮汤】加开水700ml、生抽1勺、盐3g、白糖1勺，煮5分钟成浓番茄汤底。','【炒蛋】另锅油1勺把蛋液炒至刚凝固盛出（保持嫩滑）。','【煮面】番茄汤中直接下面条煮至断生（约3-4分钟），或另锅煮面捞入汤碗（汤更清爽）。','【组合】面上铺炒蛋，淋汤汁，滴香油撒葱花。'],tip:'番茄炒得越烂汤越浓。面条在汤里煮会吸味更香，但汤会变稠，看个人喜好选择。'},
+{id:102,name:'猪肉白菜饺子',emoji:'🥟',cat:'主食',desc:'北方经典馅料，一口爆汁，全家一起包的团圆味',time:'90分钟',diff:'中等',ing:[['猪肉糜(三肥七瘦)','400g','肉类'],['大白菜','500g','蔬菜'],['饺子皮','50张','主食'],['生姜','1块','蔬菜'],['小葱','3根','蔬菜'],['生抽','2勺','调料'],['蚝油','1勺','调料'],['香油','2勺','调料'],['盐','5g','调料'],['花椒水','100ml','调料'],['白胡椒粉','少许','调料']],steps:['【花椒水】花椒1勺用100ml热水泡20分钟放凉（去腥增嫩的关键）。','【调肉馅】肉糜加盐3g、生抽2勺、蚝油1勺、白胡椒粉、姜末，分3次打入花椒水，每次顺一个方向搅至完全吸收，最后搅到肉馅发黏上劲。','【处理白菜】白菜切碎加盐2g腌10分钟杀水，纱布包住挤干（挤出的水别浪费可代替花椒水），拌入肉馅，加香油2勺和葱花拌匀。','【包饺子】取饺子皮放1勺馅，对折捏紧中间，两手虎口向中间挤捏封口（挤饺法快且饱满）。','【煮饺子】水大开下饺子轻推防粘，再次沸腾后点凉水，共点2次水，饺子全部鼓胀浮起即熟（约6分钟）。'],tip:'肉馅打水要「少量多次+同一方向」，才能嫩滑爆汁。煮饺子点凉水防止皮破馅生。蘸料：醋+生抽+辣椒油+蒜末。'},
+{id:103,name:'扬州炒饭',emoji:'🍚',cat:'主食',desc:'配料丰富的宴席级炒饭，粒粒分明五彩斑斓',time:'20分钟',diff:'中等',ing:[['隔夜米饭','2碗约400g','主食'],['鸡蛋','3个','蛋奶'],['虾仁','100g','海鲜'],['火腿','50g','肉类'],['青豆玉米粒','80g','蔬菜'],['胡萝卜','半根','蔬菜'],['小葱','2根','蔬菜'],['盐','2g','调料'],['白胡椒粉','少许','调料'],['淀粉','半勺','调料'],['食用油','3勺','调料']],steps:['【备料】虾仁加盐1g、淀粉半勺抓匀腌5分钟；火腿胡萝卜切小丁；青豆玉米焯水1分钟沥干。','【滑虾仁】锅中油1勺，下虾仁炒至变色卷曲盛出。','【炒蛋】补油下蛋液，膨起后划散盛出。','【炒饭】再补油1勺，下米饭大火翻炒2分钟打散，下火腿丁胡萝卜丁青豆玉米炒1分钟。','【合炒】倒回虾仁鸡蛋，加盐2g、白胡椒粉炒匀，沿锅边淋半勺生抽（可选），撒葱花出锅。'],tip:'正宗扬州炒饭标准：米饭粒粒分明、配料切得和米粒差不多大。配料可随冰箱存货调整，火腿和虾仁是灵魂。'},
+{id:104,name:'黄鱼面(浙江)',emoji:'🐟',cat:'主食',desc:'宁波舟山名吃，奶白鱼汤鲜掉眉毛，一碗面半斤鲜',time:'60分钟',diff:'较难',ing:[['小黄鱼','2条约300g','海鲜'],['雪菜','80g','蔬菜'],['面条','200g','主食'],['生姜','4片','蔬菜'],['小葱','2根','蔬菜'],['绍兴黄酒','2勺','调料'],['猪油','1勺','调料'],['盐','2g','调料'],['白胡椒粉','少许','调料']],steps:['【煎鱼熬汤】黄鱼洗净擦干，锅中下猪油1勺将鱼两面煎黄，烹入黄酒2勺，加开水900ml和姜片，大火滚煮15-20分钟至汤色奶白（大火滚才出白汤）。','【拆肉】鱼捞出稍凉拆出鱼肉备用，鱼骨回汤中再熬10分钟，滤出鱼骨弃去，得浓白鱼汤。','【炒雪菜】雪菜洗净挤干切碎，干锅煸炒2分钟出香（宁波做法雪菜是黄鱼面的绝配）。','【煮面】另锅水开下面条煮至断生，捞入碗中。','【组合】碗中加盐2g、白胡椒粉，冲入滚烫鱼汤，面上铺鱼肉和雪菜，撒葱花。'],tip:'鱼汤奶白的关键：煎鱼+开水+大火滚煮。拆鱼肉时仔细检查鱼刺。雪菜有咸味，盐要少放。'}
+,
+{id:105,name:'炒年糕(浙江)',emoji:'🍢',cat:'主食',desc:'宁波水磨年糕，软糯Q弹配雪菜肉丝，浙江人的乡愁',time:'20分钟',diff:'简单',ing:[['宁波水磨年糕','400g','主食'],['猪里脊丝','100g','肉类'],['雪菜','50g','蔬菜'],['小青菜','3棵','蔬菜'],['生姜','2片','蔬菜'],['生抽','1勺','调料'],['绍兴黄酒','1勺','调料'],['盐','1g','调料'],['淀粉','半勺','调料'],['食用油','3勺','调料']],steps:['【泡年糕】年糕片冷水泡10分钟（或掰开用温水泡5分钟）至微软，沥干防粘。','【腌肉】肉丝加盐1g、黄酒半勺、淀粉半勺抓匀腌10分钟。','【滑肉】热锅油2勺，下肉丝炒至变白，下雪菜和姜丝炒1分钟出香，盛出。','【炒年糕】补油1勺，下年糕片中火炒3-4分钟至软身微鼓（用铲翻动防粘锅）。','【合炒】倒回肉丝雪菜，下青菜段，加生抽1勺、黄酒半勺、少许水焖1分钟让年糕吸味，炒匀出锅。'],tip:'选宁波慈城水磨年糕才够糯。炒时加一点点水焖，年糕软而不硬心。甜口可加半勺糖提鲜。'},
+{id:106,name:'梅干菜烧饼(绍兴)',emoji:'🫓',cat:'主食',desc:'绍兴街头记忆，薄脆饼皮裹梅干菜肉香，家庭平底锅版',time:'60分钟',diff:'较难',ing:[['中筋面粉','300g','主食'],['梅干菜','80g','干货'],['猪肉糜','150g','肉类'],['温水','160ml','调料'],['酵母','2g','调料'],['白糖','1勺','调料'],['生抽','1勺','调料'],['香油','1勺','调料'],['小葱','2根','蔬菜'],['食用油','适量','调料']],steps:['【和面】面粉300g+酵母2g+温水160ml+白糖1勺揉成光滑面团，盖湿布醒发30分钟（半发面饼皮更酥松）。','【调馅】梅干菜泡洗挤干切碎，干锅煸香；拌入肉糜、生抽1勺、白糖半勺、香油1勺、葱花调匀。','【包饼】面团分8个剂子，擀成圆片包入馅料，收口捏紧后轻轻擀成厚约1cm的圆饼（轻擀防破皮露馅）。','【烙制】平底锅刷油小火，饼放入烙3分钟至底面金黄，翻面刷油再烙3分钟，两面金黄按压饼边能回弹即熟。','【增香】喜欢更酥的，烙好后送入200℃烤箱烤5分钟逼出油分，饼皮更薄脆。'],tip:'馅里的梅干菜一定要先煸炒，香气翻倍。擀饼露馅没关系，撒点干粉补上继续烙。'},
+{id:107,name:'煲仔饭',emoji:'🍚',cat:'主食',desc:'广式煲仔饭家庭版，腊味油润锅巴金黄焦香',time:'50分钟',diff:'中等',ing:[['丝苗米(或大米)','200g','主食'],['广式腊肠','2根','肉类'],['鸡蛋','1个','蛋奶'],['小青菜','3棵','蔬菜'],['生姜','2片','蔬菜'],['生抽','2勺','调料'],['老抽','半勺','调料'],['蚝油','1勺','调料'],['白糖','半勺','调料'],['香油','1勺','调料'],['食用油','2勺','调料']],steps:['【泡米】大米洗净浸泡30分钟（泡过的米才能和肉同步熟透），沥干。','【入煲】砂锅内壁刷油1勺（锅巴关键），米放入加水至没过米1cm（比平时煮饭略少），中火煮开。','【铺料】水开后转最小火，铺上斜切的腊肠片和姜片，盖盖焖10分钟。','【打蛋】沿锅边淋半勺油（促锅巴），中间打入鸡蛋，盖盖继续小火焖8分钟至蛋熟饭干。','【调汁】生抽2勺+老抽半勺+蚝油1勺+白糖半勺+香油1勺+水2勺，微波炉或小火加热成豉油汁。','【上桌】青菜焯水摆上，淋豉油汁，拌匀连锅巴一起吃。'],tip:'听声辨火：煲内「滋滋」声响起说明水干开始出锅巴，此时沿锅边补一圈油并转小火烘3分钟，锅巴金黄不糊。'},
+{id:108,name:'蛋包饭',emoji:'🍳',cat:'主食',desc:'嫩滑蛋皮包番茄炒饭，淋上番茄酱孩子最爱',time:'20分钟',diff:'中等',ing:[['隔夜米饭','1碗约250g','主食'],['鸡蛋','3个','蛋奶'],['洋葱','1/4个','蔬菜'],['胡萝卜','少许','蔬菜'],['火腿肠','1根','肉类'],['青豆','30g','蔬菜'],['番茄酱','3勺','调料'],['盐','1g','调料'],['白糖','半勺','调料'],['牛奶','1勺','蛋奶'],['食用油','3勺','调料']],steps:['【炒馅】洋葱胡萝卜火腿切小丁；锅中油1勺下洋葱丁炒透明，加火腿胡萝卜青豆炒1分钟。','【炒饭】倒入米饭炒散，加番茄酱2勺、盐1g、白糖半勺炒匀成番茄炒饭，盛出。','【打蛋】鸡蛋3个加牛奶1勺、盐少许打散过筛（蛋皮更细腻）。','【摊蛋皮】不粘锅油2勺烧至五成热，倒入蛋液转小火，晃动锅身摊平，待底部凝固表面还湿润时（约40秒）关火。','【包饭】炒饭倒在蛋皮一半上，将另一半蛋皮折起盖住饭成半月形，滑入盘中。','【装饰】表面用番茄酱1勺画线或写字，配沙拉酱即可。'],tip:'蛋皮半熟状态最好包：表面湿润才能与饭粘合，全熟易破。用不粘锅+足够油量是成功关键。'},
+{id:109,name:'酸辣粉',emoji:'🌶️',cat:'主食',desc:'重庆街头名小吃，红薯粉酸辣爽滑，吸溜过瘾',time:'20分钟',diff:'简单',ing:[['红薯粉条','150g','干货'],['花生米','30g','干货'],['黄豆','20g','干货'],['榨菜','30g','蔬菜'],['小葱','2根','蔬菜'],['香菜','2根','蔬菜'],['大蒜','3瓣','蔬菜'],['辣椒油','2勺','调料'],['香醋','3勺','调料'],['生抽','2勺','调料'],['花椒粉','半勺','调料'],['高汤或热水','400ml','调料']],steps:['【泡粉】红薯粉条温水泡30分钟至软（或开水煮5分钟后焖10分钟）。','【炸豆】花生米和黄豆冷油下锅小火炸酥，撒盐晾凉；榨菜切末，蒜剁末，葱花香菜切好。','【碗底料】碗中放蒜末、辣椒油2勺、香醋3勺、生抽2勺、花椒粉半勺、榨菜末。','【煮粉】泡软的粉条入沸水煮2-3分钟至透明弹滑，捞入料碗。','【冲汤】倒入滚烫高汤或开水400ml搅匀，铺上花生黄豆、葱花香菜。'],tip:'酸辣粉的灵魂比例：醋要比想象的多。「酸」用香醋「辣」用油泼辣子，花椒粉现磨的最香。'},
+{id:110,name:'牛肉面',emoji:'🍜',cat:'主食',desc:'红烧牛肉浇头家庭版，肉烂汤浓面条筋道',time:'2.5小时',diff:'中等',ing:[['牛腩','800g','肉类'],['面条','400g','主食'],['小青菜','4棵','蔬菜'],['生姜','1块','蔬菜'],['大蒜','6瓣','蔬菜'],['大葱','1段','蔬菜'],['八角','2颗','调料'],['桂皮','1小段','调料'],['香叶','2片','调料'],['郫县豆瓣酱','2勺','调料'],['生抽','3勺','调料'],['老抽','1勺','调料'],['冰糖','10g','调料'],['绍兴黄酒','3勺','调料']],steps:['【焯水】牛腩切4cm块，冷水下锅加姜片黄酒2勺，水开撇沫煮5分钟，捞出温水冲净。','【炒料】锅中油2勺，下豆瓣酱2勺小火炒出红油，下姜蒜葱段和八角桂皮香叶炒香。','【烧牛肉】下牛腩翻炒2分钟，淋黄酒1勺、生抽3勺、老抽1勺、冰糖，加开水没过牛肉3cm，大火烧开转小火炖90分钟至筷子轻松插入。','【调味】加盐适量（豆瓣酱生抽有咸味先尝再放），再炖10分钟，牛肉浇头即成（可一次多做冷藏，随吃随取）。','【煮面】水开下面条煮至断生，青菜烫熟。','【组合】碗中盛面，铺牛肉块和青菜，浇上两大勺牛肉原汤，撒葱花香菜。'],tip:'牛肉选牛腩带筋带油花，炖出来才软糯。汤底用炖肉原汤最香，讲究的可用牛骨汤打底。'},
+{id:111,name:'炸酱面',emoji:'🍝',cat:'主食',desc:'老北京风味，小碗干炸酱香浓郁，菜码齐全',time:'30分钟',diff:'简单',ing:[['手擀面','400g','主食'],['猪肉丁(半肥瘦)','250g','肉类'],['干黄酱','3勺','调料'],['甜面酱','2勺','调料'],['黄瓜','1根','蔬菜'],['豆芽','100g','蔬菜'],['黄豆','50g','干货'],['大蒜','3瓣','蔬菜'],['小葱','2根','蔬菜'],['绍兴黄酒','1勺','调料'],['白糖','1勺','调料'],['食用油','4勺','调料']],steps:['【备酱】干黄酱3勺+甜面酱2勺+黄酒1勺+白糖1勺+水4勺调匀（黄酱甜面酱3:2是老北京配方）。','【煸肉】锅中油4勺（炸酱油要多才香），下猪肉丁中火煸至吐油微黄，下姜末炒香。','【炸酱】倒入调好的酱，小火慢炸8-10分钟并不停推底防糊，炸至酱汁浓稠油酱分离、表面浮一层亮油即「小碗干炸」标准。','【备菜码】黄瓜切丝，豆芽焯水1分钟，黄豆提前泡发煮熟，大蒜切末。','【煮面】手擀面煮熟，过一遍凉开水更筋道（夏天吃「过水面」），捞入碗中。','【组合】面上码菜码，浇两大勺炸酱，拌匀开吃。'],tip:'炸酱必须小火慢炸并勤推底，糊一点整锅发苦。酱一次多做，冰箱存一周拌面拌饭都行。'},
+{id:112,name:'海鲜炒面',emoji:'🍝',cat:'主食',desc:'虾鱿蛤蜊配焦香面条，大排档人气王在家做',time:'20分钟',diff:'中等',ing:[['粗面条(或乌冬面)','250g','主食'],['虾仁','100g','海鲜'],['鱿鱼','1条','海鲜'],['蛤蜊','200g','海鲜'],['小青菜','3棵','蔬菜'],['洋葱','半个','蔬菜'],['生抽','2勺','调料'],['老抽','半勺','调料'],['蚝油','1勺','调料'],['绍兴黄酒','1勺','调料'],['白胡椒粉','少许','调料'],['食用油','3勺','调料']],steps:['【煮面】面条煮至八分熟（比包装时间少1分钟），捞出拌1勺油防粘，摊开晾一下。','【处理海鲜】蛤蜊淡盐水吐沙2小时后焯水至开口；鱿鱼切圈焯10秒；虾仁加盐胡椒粉腌5分钟。','【炒海鲜】锅中油1勺烧热，下虾仁鱿鱼大火炒1分钟盛出（海鲜先炒后回锅才不老）。','【炒面】补油2勺，下洋葱丝青菜炒软，倒入面条大火翻炒2分钟，用筷子和铲子配合挑散。','【调味合炒】沿锅边淋生抽2勺、老抽半勺、蚝油1勺、黄酒1勺，倒入海鲜和蛤蜊翻炒1分钟至面条均匀上色，撒白胡椒粉出锅。'],tip:'面条八分熟+大火快炒是炒面不坨不断的关键。调味沿锅边淋，高温激发「镬气」。'},
+{id:113,name:'馄饨(鲜肉)',emoji:'🥟',cat:'主食',desc:'皮薄馅鲜汤清，绍兴人的早点夜宵万能选项',time:'50分钟',diff:'简单',ing:[['猪肉糜(三肥七瘦)','300g','肉类'],['馄饨皮','1斤','主食'],['小葱','3根','蔬菜'],['生姜','1块','蔬菜'],['紫菜','5g','干货'],['虾皮','1勺','干货'],['鸡蛋','1个','蛋奶'],['生抽','1勺','调料'],['蚝油','1勺','调料'],['香油','1勺','调料'],['盐','3g','调料'],['白胡椒粉','少许','调料']],steps:['【葱姜水】葱白姜丝用80ml温水抓揉泡10分钟成葱姜水。','【调馅】肉糜加盐3g、生抽1勺、蚝油1勺、白胡椒粉、鸡蛋1个，分2次打入葱姜水顺一个方向搅至上劲发黏，最后拌入香油1勺和葱花。','【包馄饨】皮放掌心，挑一小团馅放中间，随意对折捏合即可（馄饨讲究「包」不讲究「捏」，30秒一个）。','【碗底】碗中放紫菜、虾皮、葱花、生抽半勺、香油几滴、白胡椒粉。','【煮制】水大开下馄饨轻推防粘，煮至全部浮起鼓胀（约3分钟），先舀两勺热汤冲入碗底，再捞馄饨入碗。'],tip:'馄饨馅比饺子馅打水更多才嫩滑。汤底用煮馄饨的汤冲开紫菜虾皮，鲜味立刻出来。'},
+{id:114,name:'小笼包(鲜肉)',emoji:'🥟',cat:'主食',desc:'薄皮多汁的小笼，家庭蒸锅版，先开窗后喝汤',time:'2小时',diff:'较难',ing:[['中筋面粉','300g','主食'],['猪肉糜','350g','肉类'],['猪皮冻','150g','肉类'],['温水','160ml','调料'],['酵母','3g','调料'],['白糖','1勺','调料'],['生姜','1块','蔬菜'],['小葱','3根','蔬菜'],['生抽','2勺','调料'],['香油','1勺','调料'],['盐','3g','调料'],['香醋','适量','调料']],steps:['【皮冻】猪皮煮软刮净油脂切条，加3倍水小火熬40分钟，滤渣冷藏凝固后切碎丁（皮冻=汤汁来源；图省事可买现成肉皮冻）。','【和面】面粉+酵母3g+温水160ml+白糖揉光滑，醒发40分钟至1.5倍大（半发面，小笼皮不用全发）。','【调馅】肉糜加盐、生抽、姜末、少许葱姜水顺向搅上劲，拌入皮冻丁和香油葱花，冷藏20分钟定型好包。','【擀皮包制】面团搓条切16个剂子，擀成中间厚边缘薄的圆皮（直径约9cm），放馅后提褶收口捏出12褶以上，收口朝上。','【蒸制】垫油纸或胡萝卜片入蒸屉，二发15分钟；水开上汽后大火蒸10分钟，关火焖2分钟再开盖（防塌陷）。'],tip:'吃法口诀「轻轻提、慢慢移、先开窗、后喝汤」。皮冻比例要足（肉:皮冻≈2:1），汤汁才多。'},
+{id:115,name:'鸡蛋灌饼',emoji:'🫓',cat:'早餐',desc:'饼皮鼓包灌蛋液，配生菜甜面酱，早餐摊人气王',time:'30分钟',diff:'中等',ing:[['中筋面粉','200g','主食'],['热水','70ml','调料'],['凉水','40ml','调料'],['鸡蛋','2个','蛋奶'],['生菜','2片','蔬菜'],['甜面酱','2勺','调料'],['辣椒酱','1勺(可选)','调料'],['小葱','2根','蔬菜'],['食用油','适量','调料'],['盐','1g','调料']],steps:['【和面】面粉200g先加70ml热水搅拌，再加40ml凉水揉成软面团（半烫面外酥内软），盖布醒20分钟。','【做油酥】面粉1勺+盐1g+热油2勺调成稀油酥（起层鼓包的关键）。','【擀坯】面团分2个剂子擀成长片，抹油酥卷起，竖着按扁再擀成圆饼。','【烙饼】平底锅多油小火，饼烙2分钟至底面微黄翻面，此时饼会慢慢鼓起大泡。','【灌蛋】从鼓泡处戳个小口，倒入打散的蛋液（加葱花），晃动让蛋液流满饼内，翻面再烙1分钟至两面金黄。','【卷饼】刷甜面酱和辣椒酱，放生菜卷起，对半切开。'],tip:'饼鼓泡才能灌蛋：油酥要抹匀、火要小、翻面后要耐心等鼓包。蛋液里加葱花更香。'},
+{id:116,name:'小米粥',emoji:'🥣',cat:'早餐',desc:'养胃早餐之王，米油厚厚一层，配咸菜最踏实',time:'35分钟',diff:'简单',ing:[['小米','80g','干货'],['清水','1000ml','调料'],['枸杞','1小把(可选)','干货'],['南瓜','100g(可选)','蔬菜']],steps:['【选米】选当年新米，色泽金黄的才熬得出米油；小米轻淘1遍即可（搓洗过度损失营养）。','【开水下锅】水烧开后再下小米（开水下锅不粘底、更省时间），大火煮开。','【熬煮】转小火保持微微冒泡熬25分钟，期间搅动2-3次防粘底。','【加料】喜欢南瓜的此时下南瓜小块同熬10分钟至软糯；关火前撒枸杞。','【焖油】关火盖盖焖5分钟，表面会结出厚厚一层米油——这是小米粥的精华。'],tip:'米水比例1:12最适中。全程小火微沸，火大易溢锅且米油熬不出来。'},
+{id:117,name:'葱油饼',emoji:'🫓',cat:'早餐',desc:'千层酥脆葱香浓郁，冷冻半成品也能煎出摊子味',time:'40分钟',diff:'中等',ing:[['中筋面粉','300g','主食'],['热水','100ml','调料'],['凉水','70ml','调料'],['小葱','5根','蔬菜'],['椒盐粉','1勺','调料'],['食用油','4勺','调料'],['盐','1g','调料']],steps:['【和面】面粉先冲入100ml热水搅成絮，再加70ml凉水和1g盐揉成柔软面团（半烫面才外酥内软），盖布醒30分钟。','【擀制】面团擀成大薄片，均匀刷油2勺、撒椒盐粉和葱花。','【卷制】从长边卷起成圆柱，轻轻拉长后盘成蜗牛状圆饼，收口压底，按扁擀成0.5cm厚的饼（轻擀防破层）。','【烙饼】平底锅油2勺中小火，饼烙3分钟至底面金黄酥脆，翻面再刷少许油烙3分钟。','【起层】出锅前用两把铲子从饼边向中间推挤拍打，层次立刻散开，切块装盘。'],tip:'面团要软（比饺子面软），醒够时间才擀得开不破层。烙好后「推挤」是出层次的手法，别省略。'}
+,
+{id:118,name:'皮蛋瘦肉粥',emoji:'🥣',cat:'早餐',desc:'绵密顺滑的广式生滚粥，咸香油润，夜宵早餐两相宜',time:'60分钟',diff:'简单',ing:[['大米','100g','主食'],['皮蛋','2个','蛋奶'],['猪瘦肉','150g','肉类'],['生姜','3片','蔬菜'],['小葱','2根','蔬菜'],['盐','3g','调料'],['白胡椒粉','少许','调料'],['淀粉','1勺','调料'],['香油','几滴','调料'],['食用油','1勺','调料']],steps:['【腌米】大米洗净拌入油1勺和盐1g腌30分钟（油盐腌过的米更易开花，粥更绵滑）。','【熬粥】米加1200ml开水大火煮开，转小火熬40分钟至米粒开花粥水浓稠，期间搅动几次防粘底。','【腌肉】瘦肉切薄片，加盐1g、淀粉1勺、姜丝、少许油抓匀腌15分钟。','【下皮蛋】1个皮蛋切丁先入粥煮10分钟化在粥里（增香增稠），另1个切块最后放（保持口感）。','【生滚】粥保持微沸，下肉片轻轻拨散煮2分钟至变色，下皮蛋块，加盐2g、白胡椒粉调味。','【出锅】滴香油撒葱花。'],tip:'粥底熬到「水米交融」再下料。肉片要薄，煮2分钟刚熟最嫩，久煮变柴。'},
+{id:119,name:'韭菜盒子',emoji:'🥟',cat:'早餐',desc:'两面金黄皮薄酥，韭菜鸡蛋粉丝馅，咬开冒香气',time:'45分钟',diff:'中等',ing:[['中筋面粉','250g','主食'],['韭菜','300g','蔬菜'],['鸡蛋','3个','蛋奶'],['龙口粉丝','1把','干货'],['虾皮','1勺','干货'],['热水','130ml','调料'],['盐','3g','调料'],['香油','2勺','调料'],['食用油','3勺','调料'],['十三香','少许','调料']],steps:['【烫面】面粉中冲入130ml热水（约80℃）搅拌成絮，揉成光滑面团盖布醒30分钟（烫面皮软凉了也不硬）。','【备馅】粉丝泡软切碎；鸡蛋炒熟铲碎晾凉；韭菜洗净彻底晾干切末，先拌香油2勺锁水（后放盐防出水）。','【调馅】韭菜+鸡蛋+粉丝+虾皮+盐3g+十三香拌匀，包之前再拌盐。','【包制】面团分6个剂子擀圆皮，放足馅料对折成半月，边缘捏紧后捏出花边（防烙时开口）。','【烙制】平底锅油3勺中小火，盒子烙3分钟至底面金黄，翻面再烙3分钟，两面金黄鼓起即熟。'],tip:'韭菜馅防出水三招：韭菜晾干、先拌油后拌盐、拌好尽快包。花边不但好看还能压实封口。'},
+{id:120,name:'三明治',emoji:'🥪',cat:'早餐',desc:'五分钟快手早餐，鸡蛋生菜火腿层层夹，配牛奶正好',time:'10分钟',diff:'简单',ing:[['吐司面包','4片','主食'],['鸡蛋','2个','蛋奶'],['火腿片','2片','肉类'],['生菜','2片','蔬菜'],['番茄','半个','蔬菜'],['芝士片','2片','蛋奶'],['沙拉酱','2勺','调料'],['黄油','10g','蛋奶']],steps:['【煎料】小火黄油化开，煎两个荷包蛋至喜欢的熟度；火腿片顺势煎30秒出香。','【烤面包】吐司入多士炉或平底锅干烙1分钟至微脆（烤过的吐司不吸酱不塌）。','【组装】吐司抹沙拉酱，依次铺生菜、番茄片、火腿、煎蛋、芝士片，盖上第二片吐司。','【压实】用手掌轻压，用保鲜膜或油纸裹紧（裹紧才好切不散）。','【切块】连纸对半切开成三角形，切面朝外摆盘。'],tip:'生菜垫在最下层能隔绝酱汁防止面包变湿。想热吃可组装后入锅小火两面各压30秒，芝士融化更香。'},
+{id:121,name:'红糖糍粑',emoji:'🍡',cat:'早餐',desc:'外酥里糯拉丝，红糖浆裹黄豆粉，川渝名点家里做',time:'20分钟',diff:'简单',ing:[['糯米粉','150g','主食'],['温水','120ml','调料'],['红糖','40g','调料'],['熟黄豆粉','2勺','干货'],['食用油','适量','调料'],['白芝麻','1勺','干货']],steps:['【和面】糯米粉中分次加入120ml温水（约40℃），揉成不粘手的软面团，分成8个小剂子搓圆按扁成1cm厚小饼。','【熬糖】红糖40g+水60ml小火熬至冒大泡、能拉丝的浓稠糖浆，关火保温。','【煎糍粑】平底锅油稍多，小饼中火煎3分钟至底面金黄鼓起，翻面再煎2分钟至两面金黄外壳酥脆。','【组合】糍粑摆盘，趁热淋上红糖浆。','【点缀】撒熟黄豆粉和白芝麻，趁热吃能拉丝。'],tip:'煎时糍粑会鼓包是正常现象。红糖浆熬到「挂勺」浓度正好，太稀挂不住太稠会发苦。'},
+{id:122,name:'手抓饼',emoji:'🫓',cat:'早餐',desc:'千层酥皮葱香四溢，加蛋加肠豪华升级',time:'30分钟',diff:'中等',ing:[['中筋面粉','250g','主食'],['开水','80ml','调料'],['凉水','50ml','调料'],['小葱','4根','蔬菜'],['猪油(或黄油)','2勺','调料'],['鸡蛋','1个','蛋奶'],['盐','1g','调料'],['食用油','2勺','调料']],steps:['【和面】面粉先冲80ml开水搅絮，再加50ml凉水揉成软面团，醒30分钟（面要软如耳垂，醒透才擀得开）。','【油酥】猪油2勺+面粉1勺+盐1g调成油酥（猪油起酥最香，没有可用黄油或普通油）。','【擀卷】面团擀成大薄片，抹匀油酥撒葱花，卷起后稍拉长，盘成圆饼按扁，擀成0.4cm薄饼。','【烙制】平底锅油2勺中小火，饼烙2分钟至金黄翻面，烙至两面金黄酥脆。','【抓松】出锅后用两把铲子从边缘向中间推拍，饼层松散如千层纸。','【升级】锅里顺势煎个鸡蛋铺在饼上，刷酱卷生菜火腿，豪华版手抓饼完成。'],tip:'冷冻保存：擀好的生饼坯垫油纸叠放冷冻，吃时无需解冻直接下锅，比买的成品还酥。'},
+{id:123,name:'鲜肉包子',emoji:'🥟',cat:'早餐',desc:'暄软白胖流油的大肉包，发面成功的成就感',time:'3小时',diff:'较难',ing:[['中筋面粉','400g','主食'],['温水','210ml','调料'],['酵母','4g','调料'],['白糖','1勺','调料'],['猪肉糜(四肥六瘦)','400g','肉类'],['生姜','1块','蔬菜'],['小葱','4根','蔬菜'],['生抽','2勺','调料'],['蚝油','1勺','调料'],['香油','2勺','调料'],['盐','4g','调料'],['花椒水','80ml','调料']],steps:['【发面】面粉+酵母4g+白糖1勺+温水210ml揉光滑，温暖处发酵1小时至2倍大，手指戳洞不回缩即发好。','【调馅】肉糜加盐、生抽、蚝油、姜末，分3次打入花椒水顺向搅上劲，拌入香油和大量葱花。','【揉面排气】发好的面团揉10分钟排净大气泡（排气彻底包子皮才光滑），搓条切12个剂子。','【包制】剂子擀成中间厚边缘薄的皮，放馅提褶收口捏18褶以上，收口捏紧朝上。','【二发】包子垫油纸入蒸屉，盖盖二发20分钟至明显变大变轻（二发不足则死面发硬）。','【蒸制】冷水上锅，水开后大火蒸15分钟，关火焖3分钟再揭盖（防瞬间遇冷回缩塌陷）。'],tip:'三个关键点：一发到位、二发充分、关火焖3分钟。肉馅四肥六瘦才流油不柴。'},
+{id:124,name:'煎饼果子',emoji:'🌯',cat:'早餐',desc:'天津街头味家庭版，绿豆面香薄脆酥，一套顶饱',time:'25分钟',diff:'中等',ing:[['绿豆面','50g','主食'],['中筋面粉','50g','主食'],['清水','250ml','调料'],['鸡蛋','2个','蛋奶'],['薄脆(或油条)','2片','主食'],['生菜','2片','蔬菜'],['小葱','2根','蔬菜'],['甜面酱','2勺','调料'],['腐乳','1块','调料'],['辣椒酱','1勺(可选)','调料'],['黑芝麻','1勺','干货'],['食用油','2勺','调料']],steps:['【调面糊】绿豆面+面粉+清水250ml搅匀过筛，静置10分钟（绿豆面是正宗风味的灵魂，比例1:1）。','【摊饼】平底锅刷薄油小火，舀一勺面糊用竹蜻蜓（或转锅）摊成薄圆饼，打入1个鸡蛋用铲摊匀，撒黑芝麻葱花。','【翻面】蛋液凝固后翻面（蛋面朝下），刷甜面酱和腐乳汁（腐乳加少许水调开）、辣椒酱。','【加料】放生菜和薄脆（或油条）。','【卷制】用铲子将饼两侧向中间折起包住薄脆，从底部卷起成筒状，中间用铲轻压断成两段。'],tip:'面糊要稀（能流动挂薄层），锅要小火——火大面糊凝固太快摊不薄。没有竹蜻蜓就转锅摊匀。'},
+{id:125,name:'酒酿圆子(绍兴/江南)',emoji:'🍶',cat:'早餐',desc:'江南甜早点，酒酿清甜圆子软糯，桂花香暖到心里',time:'20分钟',diff:'简单',ing:[['甜酒酿','200g','干货'],['糯米小圆子','150g','主食'],['糯米粉','80g(自制圆子用)','主食'],['温水','60ml','调料'],['鸡蛋','1个','蛋奶'],['枸杞','1小把','干货'],['干桂花','少许','干货'],['冰糖','20g','调料'],['淀粉','1勺','调料']],steps:['【搓圆子】（用现成的跳过）糯米粉80g分次加温水60ml揉成团，搓成1cm小圆子，撒干粉防粘。','【煮圆子】水开下圆子，煮至全部浮起再煮1分钟至软糯。','【下酒酿】加酒酿200g和冰糖20g，轻推煮开即转小火（酒酿久煮酸味重酒香散）。','【勾芡淋蛋】淀粉1勺+水2勺淋入推匀成薄羹，转小火淋入蛋液成蛋花。','【出锅】撒枸杞和干桂花，甜香扑鼻即可盛碗。'],tip:'酒酿最后放、煮开就关火，才能保住清甜酒香。选米粒完整、酒香自然的甜酒酿，绍兴本地冬酿酒酿更佳。'},
+{id:126,name:'豆浆油条',emoji:'🥛',cat:'早餐',desc:'中式早餐CP，现磨豆浆配酥脆油条的经典搭配',time:'30分钟(豆浆)+油条建议买现成',diff:'简单',ing:[['干黄豆','80g','干货'],['清水','1000ml','调料'],['白糖','2勺','调料'],['油条','2根','主食'],['小葱','1根','蔬菜'],['榨菜','少许','蔬菜']],steps:['【泡豆】干黄豆洗净，清水浸泡8小时以上（夏天冷藏泡，泡至豆子饱满无硬芯）。','【打浆】泡好的黄豆加1000ml清水入破壁机，选「豆浆」模式打磨煮沸一体（约25分钟）。','【过滤】讲究口感的用纱布滤去豆渣（豆渣别扔，炒鸡蛋很香），加白糖2勺搅化。','【加热油条】油条入空气炸锅180℃复热3分钟（或平底锅干烙1分钟），恢复酥脆。','【组合】热豆浆配酥脆油条，配榨菜丝葱花，经典早餐完成。'],tip:'没有破壁机：豆浆机选「五谷」模式；生豆浆必须彻底煮沸（假沸后再煮5分钟）否则有皂素会不适。'},
+{id:127,name:'烧麦(糯米)',emoji:'🥟',cat:'早餐',desc:'江南糯米烧麦，皮薄馅糯酱香浓，一口一个满足',time:'90分钟',diff:'中等',ing:[['糯米','200g','主食'],['烧麦皮(或馄饨皮)','30张','主食'],['猪肉丁','150g','肉类'],['干香菇','6朵','干货'],['胡萝卜','半根','蔬菜'],['青豆','50g','蔬菜'],['生抽','2勺','调料'],['老抽','1勺','调料'],['蚝油','1勺','调料'],['白糖','1勺','调料'],['绍兴黄酒','1勺','调料'],['小葱','2根','蔬菜']],steps:['【蒸糯米】糯米浸泡4小时后沥干，垫纱布上锅蒸25分钟至熟透（蒸的糯米粒粒分明，比煮的好）。','【炒馅】锅中油2勺，下肉丁煸至变色，下香菇丁胡萝卜丁青豆炒2分钟，加生抽2勺、老抽1勺、蚝油1勺、白糖1勺、黄酒1勺炒香。','【拌馅】倒入蒸好的糯米饭翻炒拌匀，让每粒米都染上酱色，撒葱花，晾至不烫手。','【包制】烧麦皮放馅（馅要多），虎口在1/3处收拢捏出腰线，顶部皮子自然散开如石榴口。','【蒸制】垫胡萝卜片入蒸屉，水开上汽后大火蒸10分钟即可。'],tip:'烧麦皮比饺子皮薄，买不到可用馄饨皮代替。糯米馅要趁温包，凉了发硬不好捏。一次多包，冷冻保存随蒸随吃。'},
+{id:128,name:'荷包蛋吐司',emoji:'🍞',cat:'早餐',desc:'流心蛋黄配焦香吐司，三分钟的能量早晨',time:'8分钟',diff:'简单',ing:[['吐司','2片','主食'],['鸡蛋','2个','蛋奶'],['黄油','15g','蛋奶'],['生菜','1片','蔬菜'],['黑胡椒粉','少许','调料'],['盐','1g','调料'],['沙拉酱','1勺','调料']],steps:['【备料】生菜洗净彻底甩干水分；鸡蛋提前从冰箱取出回温5分钟（冷蛋下锅易溅油且受热不均）。','【煎蛋】小火黄油化开，磕入鸡蛋，撒盐和黑胡椒，加盖焖2分钟至蛋白凝固、蛋黄仍流心（喜欢全熟焖4分钟）。','【烤吐司】吐司入多士炉烤至微黄，或平底锅干烙1分钟。','【组装】吐司抹沙拉酱，放生菜和煎好的荷包蛋，盖上另一片。','【切开】对半切开，让流心蛋黄切面朝向自己，配牛奶或咖啡。'],tip:'黄油小火慢煎，蛋边微焦最香。吐司现烤现吃，放久回软影响口感。赶时间可用平底锅同时煎蛋烘吐司。'},
+{id:129,name:'八宝粥',emoji:'🥫',cat:'早餐',desc:'五谷杂粮甜糯绵密，一锅炖出营养早餐',time:'90分钟',diff:'简单',ing:[['大米','50g','主食'],['糯米','50g','主食'],['红豆','30g','干货'],['花生','30g','干货'],['莲子','20g','干货'],['红枣','6颗','干货'],['桂圆干','8颗','干货'],['葡萄干','20g','干货'],['冰糖','40g','调料'],['清水','1500ml','调料']],steps:['【浸泡】红豆花生莲子较难熟，提前浸泡4小时以上（或过夜）；大米糯米淘洗后泡30分钟。','【下锅】所有材料（除葡萄干冰糖）入锅加清水1500ml，大火烧开。','【慢熬】转小火加盖熬60分钟，期间搅动几次防粘底，至豆子软烂粥水浓稠。','【调味】加冰糖40g和葡萄干再煮10分钟至糖化。','【焖稠】关火焖10分钟，粥更绵密，温热食用最佳。'],tip:'用高压锅上汽后压25分钟可大幅省时。八宝配料可灵活替换：燕麦、薏米、百合、核桃都好。提前泡豆是软烂的关键。'},
+{id:130,name:'葱油拌面(早餐版)',emoji:'🍜',cat:'早餐',desc:'周末早午餐的松弛感，10分钟简版葱油面配煎蛋',time:'15分钟',diff:'简单',ing:[['细面条','150g','主食'],['小葱','5根','蔬菜'],['鸡蛋','1个','蛋奶'],['生抽','2勺','调料'],['老抽','半勺','调料'],['白糖','1勺','调料'],['猪油','1勺','调料'],['食用油','2勺','调料']],steps:['【简易葱油】小葱切段；锅中油2勺+猪油1勺，中小火下葱段炸5分钟至焦黄出香，捞出葱段。','【调汁】葱油中加生抽2勺、老抽半勺、白糖1勺、水2勺，煮开即成简版葱油汁。','【煮面】水开下细面煮2-3分钟至刚断生，捞出沥干，趁热拌入葱油汁。','【煎蛋】锅中煎一个边缘焦脆的荷包蛋（猪油煎蛋是灵魂）。','【组合】面上盖煎蛋，铺炸过的焦葱，拌匀开吃。'],tip:'早餐版精髓是「快」：葱炸5分钟出香即可，不用像正餐版熬15分钟。周末可提前熬一罐葱油，工作日早上2分钟拌面。'}
+];
+
+/* ---------- 常量 ---------- */
+const LS_KEY='sxMenuV4';
+const SHOP_CATS=['海鲜','肉类','蔬菜','豆制品','蛋奶','干货','主食','调料'];
+const SHOP_EMOJI={'海鲜':'🦐','肉类':'🥩','蔬菜':'🥬','豆制品':'🧈','蛋奶':'🥚','干货':'🍄','主食':'🍚','调料':'🧂'};
+const BY_ID={};DISHES.forEach(d=>{BY_ID[d.id]=d;});
+const WEEK=['周日','周一','周二','周三','周四','周五','周六'];
+
+/* ---------- 小工具 ---------- */
+const $=id=>document.getElementById(id);
+function fmtDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function todayStr(){return fmtDate(new Date());}
+function dateCN(s){
+  if(!s)return '';
+  const p=s.split('-').map(Number);const d=new Date(p[0],p[1]-1,p[2]);
+  return p[1]+'月'+p[2]+'日 · '+WEEK[d.getDay()];
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+let toastTimer=null;
+function showToast(msg,ms){
+  ms=ms||2000;
+  const t=$('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),ms);
+}
+function copyText(text,label){
+  function fallback(){
+    try{
+      const ta=document.createElement('textarea');
+      ta.value=text;ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(ta);ta.focus();ta.select();
+      const ok=document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast(ok?(label||'内容')+'已复制 ✓':'复制失败，请长按手动复制');
+    }catch(e){showToast('复制失败，请长按手动复制');}
+  }
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(text).then(()=>showToast((label||'内容')+'已复制 ✓')).catch(fallback);
+  }else{fallback();}
+}
+
+/* ---------- 状态 ---------- */
+function loadState(){
+  const def={name:'',orders:{},orderDate:'',history:{},favorites:[],submits:{}};
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(raw){const d=JSON.parse(raw);if(d&&typeof d==='object'){
+      def.name=d.name||'';def.orders=d.orders||{};def.orderDate=d.orderDate||'';
+      def.history=d.history||{};def.favorites=Array.isArray(d.favorites)?d.favorites:[];def.submits=d.submits||{};
+    }}
+  }catch(e){}
+  return def;
+}
+let S=loadState();
+function saveState(){try{localStorage.setItem(LS_KEY,JSON.stringify(S));}catch(e){}}
+
+let curCat='全部';
+let searchKw='';
+let suggestIds=null;
+let mode='order';
+let selected=new Set();
+let submitted=false;
+let bought=new Set();
+let recentSet=new Set();
+
+/* 跨天自动归档重置（新的一天） */
+function dailyCheck(){
+  const t=todayStr();
+  if(S.orderDate&&S.orderDate!==t){
+    S.orders={};S.submits={};
+  }
+  S.orderDate=t;
+  /* 清理 14 天前的历史 */
+  const cutoff=new Date();cutoff.setDate(cutoff.getDate()-14);
+  Object.keys(S.history).forEach(k=>{
+    const p=k.split('-').map(Number);
+    if(new Date(p[0],p[1]-1,p[2])<cutoff)delete S.history[k];
+  });
+  saveState();
+}
+dailyCheck();
+
+function myOrders(){return S.orders[S.name]||[];}
+function allOrderedIds(){
+  const set=new Set();
+  Object.keys(S.orders).forEach(n=>(S.orders[n]||[]).forEach(id=>set.add(id)));
+  return set;
+}
+function computeRecent(){
+  recentSet=new Set();
+  const now=new Date();
+  for(let i=0;i<=2;i++){
+    const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);
+    const k=fmtDate(d);
+    (S.history[k]||[]).forEach(id=>{if(BY_ID[id])recentSet.add(id);});
+  }
+}
+
+/* ---------- 点菜视图渲染 ---------- */
+function renderHeader(){
+  $('whoBadge').textContent=S.name?(S.name+'的菜单'):'点击设置身份';
+  const n=allOrderedIds().size;
+  $('headerSub').textContent=dateCN(todayStr())+' · 家人已点 '+n+' 道 · 共 '+DISHES.length+' 道可选';
+}
+function renderTabs(){
+  const counts={'全部':DISHES.length};
+  CATS.forEach(c=>counts[c]=DISHES.filter(d=>d.cat===c).length);
+  const tabs=['全部'].concat(CATS);
+  $('tabs').innerHTML=tabs.map(c=>
+    '<button class="tab'+(curCat===c?' active':'')+'" data-cat="'+c+'">'+(c==='全部'?'🍽️ 全部':(CAT_EMOJI[c]+' ')+c)+'<span class="tnum">'+counts[c]+'</span></button>'
+  ).join('');
+}
+function matchKw(d){
+  if(!searchKw)return true;
+  const k=searchKw.toLowerCase();
+  if(d.name.toLowerCase().indexOf(k)>-1)return true;
+  if(d.desc.toLowerCase().indexOf(k)>-1)return true;
+  return d.ing.some(i=>i[0].toLowerCase().indexOf(k)>-1);
+}
+function byFav(arr){
+  return arr.slice().sort((a,b)=>{
+    const fa=S.favorites.indexOf(a.id)>-1?1:0;
+    const fb=S.favorites.indexOf(b.id)>-1?1:0;
+    return fb-fa;
+  });
+}
+function dishCardHTML(d){
+  const isSel=selected.has(d.id);
+  const isFav=S.favorites.indexOf(d.id)>-1;
+  const isSug=suggestIds&&suggestIds.has(d.id);
+  const isRecent=recentSet.has(d.id);
+  return '<div class="dish-card'+(isSel?' selected':'')+(isSug?' suggest':'')+'" data-id="'+d.id+'">'
+   +(isRecent?'<div class="dc-recent-badge">3天内吃过</div>':'')
+   +'<div class="dc-top"><span class="dc-emoji">'+d.emoji+'</span>'
+   +'<button class="fav-btn'+(isFav?' on':'')+'" data-fav="'+d.id+'" title="收藏">'+(isFav?'♥':'♡')+'</button></div>'
+   +'<div class="dc-name">'+esc(d.name)+'</div>'
+   +'<div class="dc-desc">'+esc(d.desc)+'</div>'
+   +'<div class="dc-meta"><span>⏱'+esc(d.time)+'</span><span class="diff-'+d.diff+'">'+d.diff+'</span>'
+   +(curCat==='全部'?'<span>'+CAT_EMOJI[d.cat]+d.cat+'</span>':'')+'</div>'
+   +'<div class="dc-foot"><button class="dc-detail-btn" data-detail="'+d.id+'">📖 做法</button><span class="dc-check">✓</span></div>'
+   +'</div>';
+}
+function renderGrid(){
+  computeRecent();
+  const pool=DISHES.filter(d=>(curCat==='全部'||d.cat===curCat)&&matchKw(d));
+  const grid=$('dishGrid');
+  if(!pool.length){
+    grid.innerHTML='';$('orderEmpty').classList.remove('hidden');return;
+  }
+  $('orderEmpty').classList.add('hidden');
+  if(searchKw||curCat!=='全部'){
+    grid.innerHTML=byFav(pool).map(dishCardHTML).join('');
+  }else{
+    let html='';
+    CATS.forEach(c=>{
+      const list=byFav(pool.filter(d=>d.cat===c));
+      if(!list.length)return;
+      html+='<div class="cat-title">'+CAT_EMOJI[c]+' '+c+'<span class="ct-num">'+list.length+'道</span><span class="ct-line"></span></div>';
+      html+=list.map(dishCardHTML).join('');
+    });
+    grid.innerHTML=html;
+  }
+}
+function renderRecent(){
+  computeRecent();
+  const area=$('recentArea');
+  if(!recentSet.size){area.innerHTML='';return;}
+  const chips=[...recentSet].map(id=>BY_ID[id]).filter(Boolean);
+  area.innerHTML='<div class="recent" id="recentBox">'
+   +'<div class="recent-title" id="recentToggle"><span>🕐 最近吃过（'+chips.length+'）</span><span class="recent-note">3天内吃过，避免重复 · 点击收起</span></div>'
+   +'<div class="recent-list" id="recentList">'+chips.map(d=>'<span class="recent-chip">'+d.emoji+' '+esc(d.name)+'</span>').join('')+'</div>'
+   +'</div>';
+  $('recentToggle').onclick=function(){
+    const l=$('recentList');
+    const hidden=l.classList.toggle('hidden');
+    this.querySelector('.recent-note').textContent=hidden?'点击展开':'3天内吃过，避免重复 · 点击收起';
+  };
+}
+function renderBottomBar(){
+  const info=$('bbInfo'),btns=$('bbBtns');
+  if(submitted){
+    info.classList.add('submitted');
+    info.innerHTML='已提交 <b>'+myOrders().length+'</b> 道';
+    btns.innerHTML='<button class="btn-mini" data-act="share">🔗 分享链接</button><button class="btn-mini" data-act="continue">继续选菜</button>';
+  }else{
+    info.classList.remove('submitted');
+    info.innerHTML='已选 <b>'+selected.size+'</b> 道';
+    btns.innerHTML='<button class="btn-submit" data-act="submit"'+(selected.size?'':' disabled')+'>提交点菜</button>';
+  }
+}
+function renderKitchenBadge(){
+  const n=allOrderedIds().size;
+  const b=$('kitchenBadge');
+  b.textContent=n;
+  b.classList.toggle('alert',n>0);
+}
+function renderOrderView(){
+  renderHeader();renderTabs();renderGrid();renderRecent();renderBottomBar();renderKitchenBadge();
+}
+
+/* ---------- 菜谱弹窗 ---------- */
+function recipeHTML(d,inModal){
+  return '<div class="recipe-box">'
+   +'<div class="rb-head"><div class="rb-title">'+d.emoji+' '+esc(d.name)+'</div><button class="rb-close" data-close="1">收起 ✕</button></div>'
+   +'<div class="dc-meta" style="margin-bottom:2px"><span>'+CAT_EMOJI[d.cat]+d.cat+'</span><span>⏱'+esc(d.time)+'</span><span class="diff-'+d.diff+'">'+d.diff+'</span></div>'
+   +'<div class="rb-sec">🧺 食材清单</div>'
+   +'<div class="rb-ings">'+d.ing.map(i=>'<span class="rb-ing"><b>'+esc(i[0])+'</b> '+esc(i[1])+'</span>').join('')+'</div>'
+   +'<div class="rb-sec">👨‍🍳 做法步骤</div>'
+   +d.steps.map((s,i)=>'<div class="rb-step"><span class="st-no">'+(i+1)+'</span><span>'+esc(s)+'</span></div>').join('')
+   +'<div class="rb-tip">💡 '+esc(d.tip)+'</div>'
+   +(inModal?'':'')
+   +'<button class="rb-add-btn'+(selected.has(d.id)?' added':'')+'" data-add="'+d.id+'">'+(selected.has(d.id)?'✓ 已选这道菜（点击取消）':'＋ 选这道菜')+'</button>'
+   +'</div>';
+}
+function openRecipe(id){
+  const d=BY_ID[id];if(!d)return;
+  $('recipeModalBody').innerHTML=recipeHTML(d,true);
+  $('recipeModal').classList.remove('hidden');
+  document.body.style.overflow='hidden';
+}
+function closeRecipe(){
+  $('recipeModal').classList.add('hidden');
+  document.body.style.overflow='';
+}
+
+/* ---------- 选择 / 收藏 / 随机 ---------- */
+function toggleSelect(id){
+  if(submitted){showToast('已提交，点「继续选菜」可修改');return;}
+  if(selected.has(id))selected.delete(id);else selected.add(id);
+  const card=document.querySelector('.dish-card[data-id="'+id+'"]');
+  if(card)card.classList.toggle('selected',selected.has(id));
+  const addBtn=document.querySelector('[data-add="'+id+'"]');
+  if(addBtn){
+    addBtn.classList.toggle('added',selected.has(id));
+    addBtn.textContent=selected.has(id)?'✓ 已选这道菜（点击取消）':'＋ 选这道菜';
+  }
+  renderBottomBar();
+}
+function toggleFav(id){
+  const i=S.favorites.indexOf(id);
+  if(i>-1){S.favorites.splice(i,1);showToast('已取消收藏');}
+  else{S.favorites.unshift(id);showToast('已收藏 ♥ 会排在分类前面');}
+  saveState();renderGrid();
+}
+function randomSuggest(){
+  const cats=CATS.slice();
+  /* 打乱分类顺序 */
+  for(let i=cats.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=cats[i];cats[i]=cats[j];cats[j]=t;}
+  const picks=[];
+  for(const c of cats){
+    if(picks.length>=4)break;
+    const pool=DISHES.filter(d=>d.cat===c&&matchKw(d));
+    if(!pool.length)continue;
+    picks.push(pool[Math.floor(Math.random()*pool.length)]);
+  }
+  if(!picks.length){showToast('没有可推荐的菜');return;}
+  suggestIds=new Set(picks.map(d=>d.id));
+  if(searchKw){/* 保持搜索过滤 */}
+  renderGrid();
+  const first=document.querySelector('.dish-card.suggest');
+  if(first)first.scrollIntoView({behavior:'smooth',block:'center'});
+  showToast('🎲 为你挑了 '+picks.length+' 道，蓝色发光的就是',2500);
+}
+
+/* ---------- 提交 / 分享 ---------- */
+function submitOrder(){
+  if(!S.name){openNameModal();return;}
+  if(!selected.size){showToast('先挑几道菜吧 👆');return;}
+  S.orders[S.name]=[...selected];
+  S.submits[S.name]=todayStr();
+  S.orderDate=todayStr();
+  const t=todayStr();
+  const h=new Set(S.history[t]||[]);
+  selected.forEach(id=>h.add(id));
+  S.history[t]=[...h];
+  submitted=true;
+  saveState();
+  renderBottomBar();renderKitchenBadge();renderHeader();renderRecent();
+  showToast('点菜成功 ✓');
+}
+function continueOrder(){
+  submitted=false;
+  selected=new Set(myOrders());
+  renderBottomBar();renderGrid();
+  showToast('继续挑选，选完记得再点提交');
+}
+function shareLink(){
+  const ids=myOrders();
+  if(!ids.length){showToast('还没有已提交的订单');return;}
+  const url=location.origin+location.pathname+'?d='+ids.join(',')+'&n='+encodeURIComponent(S.name);
+  copyText(url,'分享链接');
+}
+
+/* ---------- 厨房视图 ---------- */
+function renderKitchen(){
+  const names=Object.keys(S.orders).filter(n=>(S.orders[n]||[]).length);
+  const ordersEl=$('kitchenOrders'),shopEl=$('kitchenShopping'),recEl=$('kitchenRecipes'),actEl=$('kitchenActions');
+  if(!names.length){
+    ordersEl.innerHTML='<div class="k-empty"><div class="ke-emoji">👨‍🍳</div><p>今天还没有人点菜</p><p style="font-size:12px">把「分享链接」发到家庭群，等家人点菜吧</p></div>';
+    shopEl.innerHTML='';recEl.innerHTML='';actEl.classList.add('hidden');
+    return;
+  }
+  actEl.classList.remove('hidden');
+  /* 每个人的订单 */
+  let html='<div class="k-sec-title">📋 今日订单<span class="ks-num">'+names.length+'人 · '+allOrderedIds().size+'道</span></div>';
+  names.forEach(n=>{
+    const ids=S.orders[n];
+    html+='<div class="person-card">'
+     +'<div class="pc-head"><div class="pc-name"><span class="pc-avatar">'+esc(n.charAt(0))+'</span>'+esc(n)+(S.name===n?'（我）':'')+'</div>'
+     +'<span class="pc-count">'+ids.length+' 道</span>'
+     +'<button class="pc-del" data-delperson="'+esc(n)+'">删除</button></div>'
+     +'<div class="pc-dishes">'+ids.map(id=>{
+        const d=BY_ID[id];if(!d)return '';
+        return '<span class="pc-dish" data-kdish="'+id+'">'+d.emoji+' '+esc(d.name)+'</span>';
+      }).join('')+'</div></div>';
+  });
+  ordersEl.innerHTML=html;
+  /* 采购清单 */
+  const groups=buildShopping();
+  let sh='<div class="k-sec-title">🧺 采购清单<span class="ks-num">按 '+names.length+' 人订单合并去重</span></div><div class="shop-card">';
+  let first=true;
+  SHOP_CATS.forEach(cat=>{
+    const items=groups[cat];
+    if(!items||!items.length)return;
+    if(cat==='调料'){sh+='<div class="shop-divider">以下为调料 · 家中常备按需补充</div>';}
+    sh+='<div class="shop-cat"><span class="sc-emoji">'+SHOP_EMOJI[cat]+'</span>'+cat+'（'+items.length+'）</div>';
+    items.forEach(it=>{
+      const key=cat+'|'+it.name;
+      const on=bought.has(key);
+      const hema='https://www.freshhema.com/search?keyword='+encodeURIComponent(it.name);
+      const dd='https://www.100.me/search?keyword='+encodeURIComponent(it.name);
+      sh+='<div class="shop-item">'
+       +'<span class="si-check'+(on?' on':'')+'" data-buy="'+esc(key)+'">✓</span>'
+       +'<div class="si-info"><div class="si-name'+(on?' done':'')+'">'+esc(it.name)+'</div>'
+       +'<div class="si-amt">'+esc(it.amts.join(' / '))+(it.src.length?' · '+esc(it.src.join('、')):'')+'</div></div>'
+       +'<div class="si-links"><a class="buy-link hema" href="'+hema+'" target="_blank" rel="noopener">盒马</a><a class="buy-link dd" href="'+dd+'" target="_blank" rel="noopener">叮咚</a></div>'
+       +'</div>';
+      first=false;
+    });
+  });
+  sh+='</div>';
+  shopEl.innerHTML=sh;
+  /* 做法详情（可折叠卡片） */
+  const whoMap={};
+  names.forEach(n=>(S.orders[n]||[]).forEach(id=>{
+    if(!whoMap[id])whoMap[id]=[];
+    if(whoMap[id].indexOf(n)===-1)whoMap[id].push(n);
+  }));
+  const orderedIds=[...allOrderedIds()];
+  let rh='<div class="k-sec-title">📖 做法详情<span class="ks-num">共 '+orderedIds.length+' 道 · 点击菜名展开</span></div>';
+  rh+='<button class="kr-expand-all" id="btnExpandAll">🔽 全部展开 / 收起</button>';
+  orderedIds.forEach(id=>{
+    const d=BY_ID[id];if(!d)return;
+    const forWhom=(whoMap[id]||[]).join('、');
+    rh+='<div class="kr-card" data-krid="'+id+'">'
+     +'<div class="kr-head" data-krhead="'+id+'">'
+       +'<span class="kr-emoji">'+d.emoji+'</span>'
+       +'<div class="kr-info">'
+         +'<div class="kr-name">'+esc(d.name)+'</div>'
+         +'<div class="kr-meta"><span>'+CAT_EMOJI[d.cat]+esc(d.cat)+'</span><span>⏱'+esc(d.time)+'</span><span class="diff-'+d.diff+'">'+esc(d.diff)+'</span></div>'
+         +(forWhom?'<span class="kr-for">为 '+esc(forWhom)+' 做</span>':'')
+       +'</div>'
+       +'<span class="kr-arrow">▼</span>'
+     +'</div>'
+     +'<div class="kr-body">'
+       +'<div class="kr-sec">🧺 食材清单</div>'
+       +'<div class="kr-ings">'+d.ing.map(i=>'<span class="kr-ing"><b>'+esc(i[0])+'</b> '+esc(i[1])+'</span>').join('')+'</div>'
+       +'<div class="kr-sec">👨‍🍳 做法步骤</div>'
+       +d.steps.map((s,i)=>'<div class="kr-step"><span class="st-no">'+(i+1)+'</span><span>'+esc(s)+'</span></div>').join('')
+       +(d.tip?'<div class="kr-tip">💡 '+esc(d.tip)+'</div>':'')
+     +'</div>'
+    +'</div>';
+  });
+  recEl.innerHTML=rh;
+}
+function buildShopping(){
+  const ids=allOrderedIds();
+  const map={};
+  ids.forEach(id=>{
+    const d=BY_ID[id];if(!d)return;
+    d.ing.forEach(arr=>{
+      const name=arr[0],amt=arr[1],cat=arr[2];
+      const key=name+'|'+cat;
+      if(!map[key])map[key]={name:name,cat:cat,amts:[],src:[]};
+      if(amt&&map[key].amts.indexOf(amt)===-1)map[key].amts.push(amt);
+      if(map[key].src.indexOf(d.name)===-1)map[key].src.push(d.name);
+    });
+  });
+  const groups={};
+  SHOP_CATS.forEach(c=>groups[c]=[]);
+  Object.keys(map).forEach(k=>{
+    const it=map[k];
+    if(groups[it.cat])groups[it.cat].push(it);
+    else groups['调料'].push(it);
+  });
+  return groups;
+}
+function shopText(){
+  const groups=buildShopping();
+  let lines=['【今日采购清单 '+dateCN(todayStr())+'】'];
+  SHOP_CATS.forEach(cat=>{
+    const items=groups[cat];
+    if(!items||!items.length)return;
+    if(cat==='调料')lines.push('————————————————','以下调料家中常备，按需补充：');
+    lines.push(SHOP_EMOJI[cat]+' '+cat+'：');
+    items.forEach(it=>lines.push('· '+it.name+(it.amts.length?'（'+it.amts.join(' / ')+'）':'')+' ← '+it.src.join('、')));
+    lines.push('');
+  });
+  return lines.join('\n').trim();
+}
+function orderText(){
+  const names=Object.keys(S.orders).filter(n=>(S.orders[n]||[]).length);
+  let lines=['【今日点菜单 '+dateCN(todayStr())+'】',''];
+  names.forEach(n=>{
+    lines.push('👤 '+n+'（'+S.orders[n].length+'道）：'+S.orders[n].map(id=>BY_ID[id]?BY_ID[id].name:'?').join('、'));
+  });
+  lines.push('','———————— 做法明细 ————————','');
+  const seen=new Set();
+  names.forEach(n=>S.orders[n].forEach(id=>{
+    if(seen.has(id))return;seen.add(id);
+    const d=BY_ID[id];if(!d)return;
+    lines.push(d.emoji+' '+d.name+'（'+d.time+' / '+d.diff+'）');
+    lines.push('食材：'+d.ing.map(i=>i[0]+' '+i[1]).join('；'));
+    d.steps.forEach((s,i)=>lines.push((i+1)+'. '+s));
+    lines.push('💡 '+d.tip,'');
+  }));
+  lines.push(shopText());
+  return lines.join('\n');
+}
+function newDay(){
+  S.orders={};S.submits={};
+  selected.clear();submitted=false;bought.clear();
+  saveState();
+  renderKitchen();renderOrderView();
+  showToast('🌅 新的一天，等家人重新点菜');
+}
+
+/* ---------- 模式切换 ---------- */
+function setMode(m){
+  mode=m;
+  $('btnModeOrder').classList.toggle('active',m==='order');
+  $('btnModeKitchen').classList.toggle('active',m==='kitchen');
+  $('orderView').classList.toggle('hidden',m!=='order');
+  $('orderSticky').classList.toggle('hidden',m!=='order');
+  $('kitchenView').classList.toggle('hidden',m!=='kitchen');
+  $('bottomBar').classList.toggle('hidden',m!=='order');
+  $('bannerArea').classList.toggle('hidden',m!=='order');
+  document.body.style.paddingBottom='0';
+  if(m==='kitchen')renderKitchen();
+  window.scrollTo(0,0);
+}
+
+/* ---------- 身份 ---------- */
+function openNameModal(prefill){
+  $('nameInput').value=prefill||S.name||'';
+  $('nameModal').classList.remove('hidden');
+  setTimeout(()=>$('nameInput').focus(),120);
+}
+function saveName(){
+  const v=$('nameInput').value.trim().slice(0,10);
+  if(!v){showToast('请输入名字');return;}
+  S.name=v;saveState();
+  $('nameModal').classList.add('hidden');
+  selected=new Set(myOrders());
+  submitted=(S.submits[S.name]===todayStr());
+  renderOrderView();
+  showToast('你好，'+v+'！开始点菜吧 🍽️');
+}
+function initQuickNames(){
+  const quick=['爸爸','妈妈','爷爷','奶奶','哥哥','姐姐'];
+  $('nameQuick').innerHTML=quick.map(q=>'<button data-qn="'+q+'">'+q+'</button>').join('');
+}
+
+/* ---------- 分享链接导入 ---------- */
+function parseImport(){
+  try{
+    const p=new URLSearchParams(location.search);
+    const d=p.get('d'),n=p.get('n');
+    if(!d||!n)return;
+    const ids=d.split(',').map(Number).filter(id=>BY_ID[id]);
+    const name=decodeURIComponent(n).slice(0,10);
+    if(!ids.length||!name)return;
+    if(name===S.name){clearParams();return;}
+    const banner=document.createElement('div');
+    banner.className='banner banner-import';
+    banner.innerHTML='<button class="banner-close" data-bclose="1">✕</button>'
+     +'<div class="banner-title">📩 '+esc(name)+' 点了 '+ids.length+' 道菜</div>'
+     +'<div class="banner-dishes">'+ids.map(id=>BY_ID[id].emoji+' '+esc(BY_ID[id].name)).join('　')+'</div>'
+     +'<div class="banner-btns"><button class="banner-btn ok" data-bimport="1">导入到厨房订单</button><button class="banner-btn no" data-bclose="1">暂不</button></div>';
+    $('bannerArea').appendChild(banner);
+    banner.addEventListener('click',function(e){
+      if(e.target.closest('[data-bimport]')){
+        const cur=new Set(S.orders[name]||[]);
+        ids.forEach(id=>cur.add(id));
+        S.orders[name]=[...cur];
+        S.orderDate=todayStr();
+        const h=new Set(S.history[todayStr()]||[]);ids.forEach(id=>h.add(id));
+        S.history[todayStr()]=[...h];
+        saveState();
+        banner.remove();clearParams();
+        renderKitchenBadge();renderHeader();renderRecent();
+        showToast('已导入 '+name+' 的订单，点「厨房」查看 ✓',2500);
+      }else if(e.target.closest('[data-bclose]')){
+        banner.remove();clearParams();
+      }
+    });
+  }catch(e){}
+}
+function clearParams(){
+  try{history.replaceState(null,'',location.origin+location.pathname);}catch(e){}
+}
+
+/* ---------- 事件绑定 ---------- */
+function bindEvents(){
+  /* 分类 tabs */
+  $('tabs').addEventListener('click',function(e){
+    const t=e.target.closest('.tab');if(!t)return;
+    curCat=t.getAttribute('data-cat');
+    suggestIds=null;
+    renderTabs();renderGrid();
+  });
+  /* 搜索 */
+  $('searchInput').addEventListener('input',function(){
+    searchKw=this.value.trim();
+    $('searchClear').style.display=searchKw?'block':'none';
+    suggestIds=null;
+    renderGrid();
+  });
+  $('searchClear').addEventListener('click',function(){
+    $('searchInput').value='';searchKw='';this.style.display='none';renderGrid();
+  });
+  /* 随机推荐 */
+  $('btnRandom').addEventListener('click',randomSuggest);
+  /* 菜品网格：收藏 / 做法 / 选中 */
+  $('dishGrid').addEventListener('click',function(e){
+    const fav=e.target.closest('[data-fav]');
+    if(fav){e.stopPropagation();toggleFav(Number(fav.getAttribute('data-fav')));return;}
+    const det=e.target.closest('[data-detail]');
+    if(det){e.stopPropagation();openRecipe(Number(det.getAttribute('data-detail')));return;}
+    const card=e.target.closest('.dish-card');
+    if(card){
+      suggestIds=null;
+      toggleSelect(Number(card.getAttribute('data-id')));
+      renderGrid();
+    }
+  });
+  /* 底部栏 */
+  $('bbBtns').addEventListener('click',function(e){
+    const b=e.target.closest('[data-act]');if(!b)return;
+    const act=b.getAttribute('data-act');
+    if(act==='submit')submitOrder();
+    else if(act==='share')shareLink();
+    else if(act==='continue')continueOrder();
+  });
+  /* 模式切换 */
+  $('btnModeOrder').addEventListener('click',()=>setMode('order'));
+  $('btnModeKitchen').addEventListener('click',()=>setMode('kitchen'));
+  /* 身份 */
+  $('btnEditName').addEventListener('click',()=>openNameModal());
+  $('btnNameOk').addEventListener('click',saveName);
+  $('nameInput').addEventListener('keydown',e=>{if(e.key==='Enter')saveName();});
+  $('nameQuick').addEventListener('click',function(e){
+    const b=e.target.closest('[data-qn]');if(!b)return;
+    $('nameInput').value=b.getAttribute('data-qn');
+  });
+  /* 菜谱弹窗 */
+  $('recipeModal').addEventListener('click',function(e){
+    if(e.target===this||e.target.closest('[data-close]')){closeRecipe();return;}
+    const add=e.target.closest('[data-add]');
+    if(add){toggleSelect(Number(add.getAttribute('data-add')));renderGrid();renderBottomBar();}
+  });
+  /* 厨房：菜名看做法 / 删除某人订单 */
+  $('kitchenOrders').addEventListener('click',function(e){
+    const dish=e.target.closest('[data-kdish]');
+    if(dish){openRecipe(Number(dish.getAttribute('data-kdish')));return;}
+    const del=e.target.closest('[data-delperson]');
+    if(del){
+      const n=del.getAttribute('data-delperson');
+      delete S.orders[n];delete S.submits[n];
+      if(S.name===n){selected.clear();submitted=false;}
+      saveState();renderKitchen();renderOrderView();
+      showToast('已删除 '+n+' 的订单');
+    }
+  });
+  /* 厨房：做法详情卡片展开/收起 */
+  $('kitchenRecipes').addEventListener('click',function(e){
+    const expandAll=e.target.closest('#btnExpandAll');
+    if(expandAll){
+      const cards=this.querySelectorAll('.kr-card');
+      const anyClosed=[...cards].some(c=>!c.classList.contains('open'));
+      cards.forEach(c=>c.classList.toggle('open',anyClosed));
+      expandAll.textContent=anyClosed?'🔼 全部收起':'🔽 全部展开';
+      return;
+    }
+    const head=e.target.closest('[data-krhead]');
+    if(head){
+      const card=head.closest('.kr-card');
+      if(card)card.classList.toggle('open');
+    }
+  });
+  /* 厨房：采购勾选 */
+  $('kitchenShopping').addEventListener('click',function(e){
+    const c=e.target.closest('[data-buy]');if(!c)return;
+    const key=c.getAttribute('data-buy');
+    if(bought.has(key))bought.delete(key);else bought.add(key);
+    c.classList.toggle('on',bought.has(key));
+    const nm=c.parentElement.querySelector('.si-name');
+    if(nm)nm.classList.toggle('done',bought.has(key));
+  });
+  /* 厨房按钮 */
+  $('btnCopyShop').addEventListener('click',()=>{
+    if(!allOrderedIds().size){showToast('还没有订单');return;}
+    copyText(shopText(),'采购清单');
+  });
+  $('btnCopyOrder').addEventListener('click',()=>{
+    if(!allOrderedIds().size){showToast('还没有订单');return;}
+    copyText(orderText(),'完整订单');
+  });
+  $('btnNewDay').addEventListener('click',newDay);
+}
+
+/* ---------- 启动 ---------- */
+function init(){
+  initQuickNames();
+  bindEvents();
+  selected=new Set(S.name?myOrders():[]);
+  submitted=!!(S.name&&S.submits[S.name]===todayStr());
+  renderOrderView();
+  parseImport();
+  if(!S.name){openNameModal();}
+}
+init();
+</script>
+</body>
+</html>
