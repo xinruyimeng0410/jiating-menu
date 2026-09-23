@@ -297,8 +297,8 @@ a{color:var(--info)}
 .btn-submit:disabled{background:#DDD;box-shadow:none;color:#fff;cursor:not-allowed}
 .btn-submit:not(:disabled):active{transform:scale(.95)}
 .btn-mini{
-  border:1.5px solid var(--primary);background:#fff;color:var(--primary);font-size:12.5px;font-weight:600;
-  padding:8px 13px;border-radius:20px;cursor:pointer;white-space:nowrap;
+  border:1.5px solid var(--primary);background:#fff;color:var(--primary);font-size:12px;font-weight:600;
+  padding:7px 10px;border-radius:18px;cursor:pointer;white-space:nowrap;
 }
 .btn-mini:active{background:var(--primary-light);transform:scale(.95)}
 
@@ -478,7 +478,7 @@ a{color:var(--info)}
 <!-- ========== 底部栏 ========== -->
 <div class="bottom-bar" id="bottomBar">
   <div class="bb-info" id="bbInfo">已选 <b>0</b> 道</div>
-  <div id="bbBtns" style="display:flex;gap:8px;align-items:center"></div>
+  <div id="bbBtns" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -834,7 +834,7 @@ function renderBottomBar(){
   if(submitted){
     info.classList.add('submitted');
     info.innerHTML='已提交 <b>'+myOrders().length+'</b> 道';
-    btns.innerHTML='<button class="btn-mini" data-act="share">🔗 分享链接</button><button class="btn-mini" data-act="continue">继续选菜</button>';
+    btns.innerHTML='<button class="btn-mini" data-act="copytext">📋 复制文字</button><button class="btn-mini" data-act="share">🔗 链接</button><button class="btn-mini" data-act="continue">✏️ 改一下</button>';
   }else{
     info.classList.remove('submitted');
     info.innerHTML='已选 <b>'+selected.size+'</b> 道';
@@ -929,7 +929,7 @@ function submitOrder(){
   submitted=true;
   saveState();
   renderBottomBar();renderKitchenBadge();renderHeader();renderRecent();
-  showToast('点菜成功 ✓');
+  showToast('点菜成功 ✓ 点下面「📋 复制文字」发到群里',3000);
 }
 function continueOrder(){
   submitted=false;
@@ -943,13 +943,20 @@ function shareLink(){
   const url=location.origin+location.pathname+'?d='+ids.join(',')+'&n='+encodeURIComponent(S.name);
   copyText(url,'分享链接');
 }
+function copyMyOrderText(){
+  const ids=myOrders();
+  if(!ids.length){showToast('还没有已提交的订单');return;}
+  const lines=['【'+S.name+'】'+dateCN(todayStr())+' 点了 '+ids.length+' 道菜：'];
+  ids.forEach(id=>{const d=BY_ID[id];if(d)lines.push(d.emoji+' '+d.name);});
+  copyText(lines.join('\n'),'点菜文字');
+}
 
 /* ---------- 厨房视图 ---------- */
 function renderKitchen(){
   const names=Object.keys(S.orders).filter(n=>(S.orders[n]||[]).length);
   const ordersEl=$('kitchenOrders'),shopEl=$('kitchenShopping'),recEl=$('kitchenRecipes'),actEl=$('kitchenActions');
   if(!names.length){
-    ordersEl.innerHTML='<div class="k-empty"><div class="ke-emoji">👨‍🍳</div><p>今天还没有人点菜</p><p style="font-size:12px">把「分享链接」发到家庭群，等家人点菜吧</p></div>';
+    ordersEl.innerHTML='<div class="k-empty"><div class="ke-emoji">👨‍🍳</div><p>今天还没有人点菜</p><p style="font-size:12px;line-height:1.6">家人点完菜会：<br>① 复制「点菜文字」发到群里 → 你直接看群消息<br>② 或把「分享链接」发给你 → 点开在顶部弹出提示后「导入到厨房订单」</p></div>';
     shopEl.innerHTML='';recEl.innerHTML='';actEl.classList.add('hidden');
     return;
   }
@@ -1203,6 +1210,7 @@ function bindEvents(){
     const act=b.getAttribute('data-act');
     if(act==='submit')submitOrder();
     else if(act==='share')shareLink();
+    else if(act==='copytext')copyMyOrderText();
     else if(act==='continue')continueOrder();
   });
   /* 模式切换 */
